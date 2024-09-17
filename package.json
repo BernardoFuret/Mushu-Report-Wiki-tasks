@@ -1,0 +1,36 @@
+{
+  "name": "card-updater",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "ts-node-esm src/index.ts",
+    "build": "tsc --project tsconfig.build.json",
+    "lint": "npm run lint:types && npm run lint:code",
+    "lint:types": "tsc",
+    "lint:code": "eslint . --report-unused-disable-directives --max-warnings 0",
+    "lint:code:fix": "eslint . --fix",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean:build": "rm -rf ./dist",
+    "clean:deps": "rm -rf ./node_modules",
+    "prepare": "husky"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^22.5.5",
+    "eslint": "^8.57.1",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-airbnb-typescript": "^18.0.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-import-resolver-typescript": "^3.6.3",
+    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "husky": "^9.1.6",
+    "lint-staged": "^15.2.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.2"
+  }
+}
