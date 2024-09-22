@@ -2,11 +2,10 @@ import { inspect } from 'node:util';
 
 import type { IJsonReplacer, IMessageFormater } from './types.js';
 
-const messageFormatter: IMessageFormater = ({ timestamp, level, message = [], stack }) => {
-  /// TODO: remove stack?
+const messageFormatter: IMessageFormater = ({ timestamp, level, message = [] }) => {
   const parsedMessage = message.map((part) => inspect(part, { depth: 5, colors: true })).join(' ');
 
-  return `[${timestamp}] [${level}]: ${parsedMessage || stack || ''}`;
+  return `[${timestamp}] [${level}]: ${parsedMessage}`;
 };
 
 const serializeError = (error: Error) => {
