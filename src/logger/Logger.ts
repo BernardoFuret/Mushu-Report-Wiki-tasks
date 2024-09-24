@@ -1,46 +1,19 @@
-import winston from 'winston';
-
-import { jsonReplacer, messageFormatter } from './formatters.js';
-import { generateLogPath } from './helpers.js';
-import { type ILogger } from './types.js';
-
-const consoleFormat = winston.format.combine(
-  winston.format.colorize(),
-  winston.format.timestamp(),
-  winston.format.errors({ stack: true }),
-  winston.format.printf(messageFormatter),
-);
-
-const fileFormat = winston.format.combine(
-  winston.format.timestamp(),
-  winston.format.errors({ stack: true }),
-  winston.format.json({ replacer: jsonReplacer }),
-);
+import { createBaseLogger } from './helpers.js';
+import { type IBaseLogger, type ILogger } from './types.js';
 
 class Logger implements ILogger {
-  readonly #baseLogger: winston.Logger;
+  readonly #baseLogger: IBaseLogger;
+
+  readonly #srcDirname: string;
 
   constructor(srcDirname: string) {
-    this.#baseLogger = winston.createLogger({
-      transports: [
-        new winston.transports.Console({
-          level: 'debug', // TODO: configure via env file?
-          format: consoleFormat,
-        }),
-        new winston.transports.File({
-          level: 'info',
-          filename: generateLogPath(srcDirname, 'combined.log'),
-          format: fileFormat,
-          options: { flags: 'w' },
-        }),
-        new winston.transports.File({
-          level: 'error',
-          filename: generateLogPath(srcDirname, 'errors.log'),
-          format: fileFormat,
-          options: { flags: 'w' },
-        }),
-      ],
-    });
+    this.#baseLogger = createBaseLogger(srcDirname);
+
+    this.#srcDirname = srcDirname;
+  }
+
+  fork(): ILogger {
+    return new Logger(this.#srcDirname);
   }
 
   debug(...message: unknown[]): this {
