@@ -23,6 +23,12 @@ interface IBaseLogger {
   error: IBaseLoggerMethod;
 }
 
+interface IBaseLoggerOptions {
+  srcDirname: string;
+  truncateLogFiles: boolean;
+  // TODO: label: string;
+}
+
 interface ILogger {
   fork(): ILogger;
   debug(...messageParts: unknown[]): this;
@@ -31,4 +37,17 @@ interface ILogger {
   error(...messageParts: unknown[]): this;
 }
 
-export type { IBaseLogger, IJsonReplacer, ILogger, IMessageFormater };
+interface ILoggerConstructorOptions {
+  srcDirname: string;
+  truncateLogFiles?: boolean;
+  // TODO: label: string;
+}
+
+export type {
+  IBaseLogger,
+  IBaseLoggerOptions,
+  IJsonReplacer,
+  ILogger,
+  ILoggerConstructorOptions,
+  IMessageFormater,
+};

@@ -3,13 +3,13 @@ import path from 'node:path';
 import winston from 'winston';
 
 import { jsonReplacer, messageFormatter } from './formatters.js';
-import { type IBaseLogger } from './types.js';
+import { type IBaseLogger, type IBaseLoggerOptions } from './types.js';
 
 const generateLogPath = (srcDirname: string, filename: string): string => {
   return path.join(srcDirname, '..', 'logs', filename);
 };
 
-const createBaseLogger = (srcDirname: string): IBaseLogger => {
+const createBaseLogger = ({ srcDirname, truncateLogFiles }: IBaseLoggerOptions): IBaseLogger => {
   const consoleFormat = winston.format.combine(
     winston.format.colorize(),
     winston.format.timestamp(),
@@ -23,6 +23,10 @@ const createBaseLogger = (srcDirname: string): IBaseLogger => {
     winston.format.json({ replacer: jsonReplacer }),
   );
 
+  const fileTransportsOptions = {
+    flags: truncateLogFiles ? 'w' : 'a',
+  };
+
   return winston.createLogger({
     transports: [
       new winston.transports.Console({
@@ -33,13 +37,13 @@ const createBaseLogger = (srcDirname: string): IBaseLogger => {
         level: 'info',
         filename: generateLogPath(srcDirname, 'combined.log'),
         format: fileFormat,
-        options: { flags: 'w' },
+        options: fileTransportsOptions,
       }),
       new winston.transports.File({
         level: 'error',
         filename: generateLogPath(srcDirname, 'errors.log'),
         format: fileFormat,
-        options: { flags: 'w' },
+        options: fileTransportsOptions,
       }),
     ],
   });

@@ -10,7 +10,7 @@ import { getDataFilePath } from './helpers.js';
 
 const srcDirname = dirname(fileURLToPath(import.meta.url));
 
-const logger = new Logger(srcDirname);
+const logger = new Logger({ srcDirname });
 
 const stream = createReadStream(getDataFilePath(srcDirname, 'example.csv')).pipe(parse());
 
@@ -32,6 +32,8 @@ for await (const record of stream) {
   });
 
   logger.info('»»»»»»»»»»»»');
+
+  logger.fork().info('Forked warning!');
 }
 
 // eslint-disable-next-line no-console
