@@ -9,7 +9,7 @@ const generateLogPath = (srcDirname: string, filename: string): string => {
   return path.join(srcDirname, '..', 'logs', filename);
 };
 
-const createBaseLogger = ({ srcDirname, truncateLogFiles }: IBaseLoggerOptions): IBaseLogger => {
+const createBaseLogger = ({ srcDirname }: IBaseLoggerOptions): IBaseLogger => {
   const consoleFormat = winston.format.combine(
     winston.format.colorize(),
     winston.format.timestamp(),
@@ -24,7 +24,7 @@ const createBaseLogger = ({ srcDirname, truncateLogFiles }: IBaseLoggerOptions):
   );
 
   const fileTransportsOptions = {
-    flags: truncateLogFiles ? 'w' : 'a',
+    flags: 'w',
   };
 
   return winston.createLogger({

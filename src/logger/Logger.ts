@@ -1,23 +1,27 @@
 import { createBaseLogger } from './helpers.js';
-import { type IBaseLogger, type ILogger, type ILoggerConstructorOptions } from './types.js';
+import {
+  type IBaseLogger,
+  type ILogger,
+  type ILoggerConstructorOptions,
+  type ILoggerFactoryOptions,
+} from './types.js';
 
 class Logger implements ILogger {
   readonly #baseLogger: IBaseLogger;
 
-  readonly #srcDirname: string;
+  protected constructor({ baseLogger }: ILoggerConstructorOptions) {
+    this.#baseLogger = baseLogger;
+  }
 
-  // TODO: create a base logger that abstracts winston stuff
-  // The logger fork will simply call the base logger with a different label
-  constructor({ srcDirname, truncateLogFiles = true }: ILoggerConstructorOptions) {
-    this.#baseLogger = createBaseLogger({ srcDirname, truncateLogFiles });
-
-    this.#srcDirname = srcDirname;
+  static create({ srcDirname }: ILoggerFactoryOptions): ILogger {
+    return new Logger({
+      baseLogger: createBaseLogger({ srcDirname }),
+    });
   }
 
   fork(): ILogger {
     return new Logger({
-      srcDirname: this.#srcDirname,
-      truncateLogFiles: false,
+      baseLogger: this.#baseLogger,
     });
   }
 

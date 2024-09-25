@@ -25,7 +25,6 @@ interface IBaseLogger {
 
 interface IBaseLoggerOptions {
   srcDirname: string;
-  truncateLogFiles: boolean;
   // TODO: label: string;
 }
 
@@ -38,9 +37,17 @@ interface ILogger {
 }
 
 interface ILoggerConstructorOptions {
-  srcDirname: string;
-  truncateLogFiles?: boolean;
+  baseLogger: IBaseLogger;
   // TODO: label: string;
+}
+
+interface ILoggerFactoryOptions {
+  srcDirname: string;
+  // TODO: label: string;
+}
+
+interface ILoggerConstructor {
+  create(options: ILoggerFactoryOptions): ILogger;
 }
 
 export type {
@@ -48,6 +55,8 @@ export type {
   IBaseLoggerOptions,
   IJsonReplacer,
   ILogger,
+  ILoggerConstructor,
   ILoggerConstructorOptions,
+  ILoggerFactoryOptions,
   IMessageFormater,
 };

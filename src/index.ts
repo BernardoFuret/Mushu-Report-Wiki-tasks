@@ -10,7 +10,7 @@ import { getDataFilePath } from './helpers.js';
 
 const srcDirname = dirname(fileURLToPath(import.meta.url));
 
-const logger = new Logger({ srcDirname });
+const logger = Logger.create({ srcDirname });
 
 const stream = createReadStream(getDataFilePath(srcDirname, 'example.csv')).pipe(parse());
 
