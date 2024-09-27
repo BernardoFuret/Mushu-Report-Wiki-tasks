@@ -13,7 +13,7 @@ interface IJsonReplacer {
 }
 
 interface IBaseLoggerMethod {
-  (data: { message: unknown[] }): void;
+  (data: { message: unknown[]; label: string }): void;
 }
 
 interface IBaseLogger {
@@ -25,11 +25,10 @@ interface IBaseLogger {
 
 interface IBaseLoggerOptions {
   srcDirname: string;
-  // TODO: label: string;
 }
 
 interface ILogger {
-  fork(): ILogger;
+  fork(label: string): ILogger;
   debug(...messageParts: unknown[]): this;
   info(...messageParts: unknown[]): this;
   warn(...messageParts: unknown[]): this;
@@ -38,12 +37,12 @@ interface ILogger {
 
 interface ILoggerConstructorOptions {
   baseLogger: IBaseLogger;
-  // TODO: label: string;
+  label: string;
 }
 
 interface ILoggerFactoryOptions {
   srcDirname: string;
-  // TODO: label: string;
+  label: string;
 }
 
 interface ILoggerConstructor {

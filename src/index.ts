@@ -4,13 +4,14 @@ import { fileURLToPath } from 'node:url';
 
 import { parse } from 'csv-parse';
 
+import { LoggerLabels } from './constants/logger.js';
 import Logger from './logger/index.js';
 import Processor from './processors/Processor.js';
 import { getDataFilePath } from './helpers.js';
 
 const srcDirname = dirname(fileURLToPath(import.meta.url));
 
-const logger = Logger.create({ srcDirname });
+const logger = Logger.create({ srcDirname, label: LoggerLabels.MAIN });
 
 const stream = createReadStream(getDataFilePath(srcDirname, 'example.csv')).pipe(parse());
 
@@ -33,7 +34,7 @@ for await (const record of stream) {
 
   logger.info('»»»»»»»»»»»»');
 
-  logger.fork().info('Forked warning!');
+  logger.fork('test label').info('Forked warning!');
 }
 
 // eslint-disable-next-line no-console
