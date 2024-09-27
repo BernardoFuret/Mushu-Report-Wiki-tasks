@@ -1,22 +1,35 @@
+import { LoggerLabels } from '../../constants/logger.js';
+import { type ILogger } from '../../logger/types.js';
+import { type IJsonSerializable } from '../../types.js';
 import { type IProcessor } from '../types.js';
 
 import RecordProcessorState from './RecordProcessorState.js';
 import { type IProcessorState } from './types.js';
 
-class HeadersProcessorState implements IProcessorState {
-  constructor(
-    // private logger: unknown,
-    private processor: IProcessor,
-  ) {}
+class HeadersProcessorState implements IProcessorState, IJsonSerializable {
+  #logger: ILogger;
+
+  #processor: IProcessor;
+
+  constructor(logger: ILogger, processor: IProcessor) {
+    this.#logger = logger.fork(LoggerLabels.PROCESSOR_STATE_HEADERS);
+
+    this.#processor = processor;
+  }
 
   async handle(record: string[]): Promise<void> {
     // TODO
-    // eslint-disable-next-line no-console
-    console.log('>>HeadersProcessorState', record);
+    this.#logger.debug('Handling record', record);
 
-    const nextState = new RecordProcessorState(this.processor, record);
+    const nextState = new RecordProcessorState(this.#logger, this.#processor, record);
 
-    this.processor.updateState(nextState);
+    this.#processor.updateState(nextState);
+  }
+
+  toJSON(): unknown {
+    return {
+      class: this.constructor.name,
+    };
   }
 }
 

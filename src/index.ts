@@ -15,27 +15,13 @@ const logger = Logger.create({ srcDirname, label: LoggerLabels.MAIN });
 
 const stream = createReadStream(getDataFilePath(srcDirname, 'example.csv')).pipe(parse());
 
-const processor = new Processor();
+const processor = new Processor(logger);
+
+logger.info('Starting');
 
 // eslint-disable-next-line no-restricted-syntax
 for await (const record of stream) {
-  logger.info('««««««««««««');
-
-  logger.debug(record);
-
-  logger.warn('A warning', ['a'], processor, { a: { a: { a: { a: { a: { a: { a: {} } } } } } } });
-
   await processor.process(record);
-
-  logger.error('An error', new Error('a', { cause: 'cause test' }), {
-    o: 'an Object',
-    oo: { data: [1, 2, 3] },
-  });
-
-  logger.info('»»»»»»»»»»»»');
-
-  logger.fork('test label').info('Forked warning!');
 }
 
-// eslint-disable-next-line no-console
-console.log('Finished');
+logger.info('Finished');
