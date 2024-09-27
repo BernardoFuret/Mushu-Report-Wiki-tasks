@@ -14,6 +14,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "clean:build": "rm -rf ./dist",
     "clean:deps": "rm -rf ./node_modules",
+    "clean:logs": "rm -rf ./logs",
     "prepare": "husky"
   },
   "keywords": [],
