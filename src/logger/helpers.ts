@@ -2,6 +2,8 @@ import path from 'node:path';
 
 import winston from 'winston';
 
+import config from '../config.js';
+
 import { jsonReplacer, messageFormatter } from './formatters.js';
 import { type IBaseLogger, type IBaseLoggerOptions } from './types.js';
 
@@ -30,11 +32,11 @@ const createBaseLogger = ({ srcDirname }: IBaseLoggerOptions): IBaseLogger => {
   return winston.createLogger({
     transports: [
       new winston.transports.Console({
-        level: 'debug', // TODO: configure via env file?
+        level: config.isDebug ? 'debug' : 'info',
         format: consoleFormat,
       }),
       new winston.transports.File({
-        level: 'info', // TODO: configure via env file?
+        level: 'info', // TODO: Enable debug?
         filename: generateLogPath(srcDirname, 'combined.log'),
         format: fileFormat,
         options: fileTransportsOptions,
@@ -49,4 +51,4 @@ const createBaseLogger = ({ srcDirname }: IBaseLoggerOptions): IBaseLogger => {
   });
 };
 
-export { createBaseLogger, generateLogPath };
+export { createBaseLogger };
