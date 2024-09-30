@@ -7,13 +7,14 @@ import { parse } from 'csv-parse';
 import { LoggerLabels } from './constants/logger.js';
 import Logger from './logger/index.js';
 import Processor from './processors/Processor.js';
+import config from './config.js';
 import { getDataFilePath } from './helpers.js';
 
 const srcDirname = dirname(fileURLToPath(import.meta.url));
 
 const logger = Logger.create({ srcDirname, label: LoggerLabels.MAIN });
 
-const stream = createReadStream(getDataFilePath(srcDirname, 'example.csv')).pipe(parse());
+const stream = createReadStream(getDataFilePath(srcDirname, config.csvFileName)).pipe(parse());
 
 const processor = new Processor(logger);
 
