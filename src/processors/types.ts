@@ -1,4 +1,4 @@
-import { type IProcessorState } from './states/types.js';
+import { type IProcessorState } from './states/types';
 
 interface IProcessor {
   updateState(state: IProcessorState): this;

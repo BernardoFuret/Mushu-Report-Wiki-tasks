@@ -1,9 +1,10 @@
-import { LoggerLabels } from '../../constants/logger.js';
-import { type ILogger } from '../../logger/types.js';
-import { type IJsonSerializable } from '../../types.js';
-import { type IProcessor } from '../types.js';
+import { LoggerLabels } from '@/constants/logger';
+import { type ILogger } from '@/logger/types';
+import { type IJsonSerializable } from '@/types';
 
-import { type IProcessorState } from './types.js';
+import { type IProcessor } from '../types';
+
+import { type IProcessorState } from './types';
 
 class RecordProcessorState implements IProcessorState, IJsonSerializable {
   #logger: ILogger;

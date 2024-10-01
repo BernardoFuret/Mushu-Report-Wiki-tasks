@@ -4,11 +4,11 @@ import { fileURLToPath } from 'node:url';
 
 import { parse } from 'csv-parse';
 
-import { LoggerLabels } from './constants/logger.js';
-import Logger from './logger/index.js';
-import Processor from './processors/Processor.js';
-import config from './config.js';
-import { getDataFilePath } from './helpers.js';
+import { LoggerLabels } from './constants/logger';
+import Processor from './processors/Processor';
+import config from './config';
+import { getDataFilePath } from './helpers';
+import Logger from './logger';
 
 const srcDirname = dirname(fileURLToPath(import.meta.url));
 

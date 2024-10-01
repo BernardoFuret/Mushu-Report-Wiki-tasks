@@ -1,6 +1,6 @@
 import { inspect } from 'node:util';
 
-import type { IJsonReplacer, IMessageFormater } from './types.js';
+import type { IJsonReplacer, IMessageFormater } from './types';
 
 const messageFormatter: IMessageFormater = ({ timestamp, level, label, message = [] }) => {
   const parsedMessage = message.map((part) => inspect(part, { depth: 5, colors: true })).join(' ');

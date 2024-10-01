@@ -1,2 +1,2 @@
-export { default } from './Logger.js';
-export { type ILogger } from './types.js';
+export { default } from './Logger';
+export { type ILogger } from './types';

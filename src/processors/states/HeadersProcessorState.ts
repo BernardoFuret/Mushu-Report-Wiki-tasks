@@ -1,10 +1,11 @@
-import { LoggerLabels } from '../../constants/logger.js';
-import { type ILogger } from '../../logger/types.js';
-import { type IJsonSerializable } from '../../types.js';
-import { type IProcessor } from '../types.js';
+import { LoggerLabels } from '@/constants/logger';
+import { type ILogger } from '@/logger';
+import { type IJsonSerializable } from '@/types';
 
-import RecordProcessorState from './RecordProcessorState.js';
-import { type IProcessorState } from './types.js';
+import { type IProcessor } from '../types';
+
+import RecordProcessorState from './RecordProcessorState';
+import { type IProcessorState } from './types';
 
 class HeadersProcessorState implements IProcessorState, IJsonSerializable {
   #logger: ILogger;
