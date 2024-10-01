@@ -1,10 +1,10 @@
-import { createBaseLogger } from './helpers.js';
+import { createBaseLogger } from './helpers';
 import {
   type IBaseLogger,
   type ILogger,
   type ILoggerConstructorOptions,
   type ILoggerFactoryOptions,
-} from './types.js';
+} from './types';
 
 class Logger implements ILogger {
   readonly #label: string;

@@ -2,10 +2,10 @@ import path from 'node:path';
 
 import winston from 'winston';
 
-import config from '../config.js';
+import config from '@/config';
 
-import { jsonReplacer, messageFormatter } from './formatters.js';
-import { type IBaseLogger, type IBaseLoggerOptions } from './types.js';
+import { jsonReplacer, messageFormatter } from './formatters';
+import { type IBaseLogger, type IBaseLoggerOptions } from './types';
 
 const generateLogPath = (srcDirname: string, filename: string): string => {
   return path.join(srcDirname, '..', 'logs', filename);

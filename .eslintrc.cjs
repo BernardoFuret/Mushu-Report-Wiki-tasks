@@ -2,6 +2,8 @@ const ALIASED_PACKAGES = ['@'];
 
 const commonRules = {
   curly: ['error', 'all'],
+
+  'import/extensions': ['error', { js: 'never', ts: 'never' }],
 };
 
 module.exports = {
@@ -94,9 +96,11 @@ module.exports = {
           '@typescript-eslint/parser': ['.ts'],
         },
         'import/resolver': {
-          typescript: {
+          // TODO: check why it breaks 'import/extensions'
+          /* typescript: {
             project: __dirname,
-          },
+          }, */
+          node: true,
         },
       },
 
