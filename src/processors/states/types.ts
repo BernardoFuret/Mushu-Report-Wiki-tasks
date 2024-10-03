@@ -2,4 +2,6 @@ interface IProcessorState {
   handle(record: string[]): Promise<void>;
 }
 
-export type { IProcessorState };
+type THeadersRecord = [string, string, ...string[]];
+
+export type { IProcessorState, THeadersRecord };

@@ -1,5 +1,6 @@
 import { LoggerLabels } from '@/constants/logger';
 import { type ILogger } from '@/logger/types';
+import { type IWikiClient } from '@/services/wikiClient';
 import { type IJsonSerializable } from '@/types';
 
 import HeadersProcessorState from './states/HeadersProcessorState';
@@ -9,12 +10,20 @@ import { type IProcessor } from './types';
 class Processor implements IProcessor, IJsonSerializable {
   #logger: ILogger;
 
+  #wikiClient: IWikiClient;
+
   #state: IProcessorState;
 
-  constructor(logger: ILogger) {
+  constructor(logger: ILogger, wikiClient: IWikiClient) {
     this.#logger = logger.fork(LoggerLabels.PROCESSOR);
 
+    this.#wikiClient = wikiClient;
+
     this.#state = new HeadersProcessorState(logger, this);
+  }
+
+  getWikiClient(): IWikiClient {
+    return this.#wikiClient;
   }
 
   updateState(state: IProcessorState): this {
