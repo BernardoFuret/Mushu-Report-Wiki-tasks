@@ -4,8 +4,12 @@ import { type IJsonSerializable } from '@/types';
 
 import { type IProcessor } from '../types';
 
-import RecordProcessorState from './RecordProcessorState';
-import { type IProcessorState } from './types';
+import RecordProcessorState from './recordProcessorState';
+import { type IProcessorState, type THeadersRecord } from './types';
+
+const isValidHeadersRecord = (record: string[]): record is THeadersRecord => {
+  return !!record[1]?.trim();
+};
 
 class HeadersProcessorState implements IProcessorState, IJsonSerializable {
   #logger: ILogger;
@@ -19,12 +23,24 @@ class HeadersProcessorState implements IProcessorState, IJsonSerializable {
   }
 
   async handle(record: string[]): Promise<void> {
-    // TODO
     this.#logger.debug('Handling record', record);
 
-    const nextState = new RecordProcessorState(this.#logger, this.#processor, record);
+    this.#logger.debug('Validating record', record, 'as headers');
 
-    this.#processor.updateState(nextState);
+    if (isValidHeadersRecord(record)) {
+      this.#logger.debug('Record', record, 'is a valid headers record');
+
+      const nextState = new RecordProcessorState(this.#logger, this.#processor, record);
+
+      this.#processor.updateState(nextState);
+    } else {
+      this.#logger.debug('Record', record, 'is not a valid headers record');
+
+      throw new Error(
+        'Invalid headers. Expected headers record to have a pagename header and at least one template parameter header',
+        { cause: { record } },
+      );
+    }
   }
 
   toJSON(): unknown {
