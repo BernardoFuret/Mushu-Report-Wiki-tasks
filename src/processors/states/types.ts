@@ -1,5 +1,8 @@
+import { type IProcessor } from '../types';
+
 interface IProcessorState {
-  handle(record: string[]): Promise<void>;
+  consume(processor: IProcessor): Promise<void>;
+  checkIsFinalState(): boolean;
 }
 
 type THeadersRecord = [string, string, ...string[]];

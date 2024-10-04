@@ -1,11 +1,9 @@
-import { createReadStream } from 'node:fs';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { parse } from 'csv-parse';
-
 import { LoggerLabels } from './constants/logger';
-import Processor from './processors/Processor';
+import CsvProcessor from './processors/CsvProcessor';
+import HeadersProcessorState from './processors/states/HeadersProcessorState';
 import WikiClient from './services/wikiClient';
 import config from './config';
 import { getDataFilePath } from './helpers';
@@ -15,28 +13,25 @@ const srcDirname = dirname(fileURLToPath(import.meta.url));
 
 const logger = Logger.create({ srcDirname, label: LoggerLabels.MAIN });
 
-const stream = createReadStream(getDataFilePath(srcDirname, config.csvFileName)).pipe(parse());
+const csvFilePath = getDataFilePath(srcDirname, config.csvFileName);
+
+const initialState = new HeadersProcessorState(logger);
 
 const wikiClient = new WikiClient(logger, {
   username: 'TODO',
   password: 'TODO',
 });
 
-const processor = new Processor(logger, wikiClient);
+const processor = new CsvProcessor(logger, csvFilePath, initialState, wikiClient);
 
 logger.info('Starting');
 
 logger.info('Reading from file', config.csvFileName);
 
-// eslint-disable-next-line no-restricted-syntax
-for await (const record of stream) {
-  try {
-    await processor.process(record);
-  } catch (e) {
-    logger.error('Caught unexpected error:', e);
-
-    break;
-  }
+try {
+  await processor.process();
+} catch (error) {
+  logger.error(error);
+} finally {
+  logger.info('Finished');
 }
-
-logger.info('Finished');

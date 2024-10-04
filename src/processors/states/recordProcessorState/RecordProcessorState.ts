@@ -1,31 +1,31 @@
 import { LoggerLabels } from '@/constants/logger';
 import { type ILogger } from '@/logger/types';
-import { type IWikiClient } from '@/services/wikiClient';
 import { type IJsonSerializable } from '@/types';
 
 import { type IProcessor } from '../../types';
+import ProcessorState from '../ProcessorState';
 import { type IProcessorState, type THeadersRecord } from '../types';
 
 import { isValidRecord, parseRecord } from './helpers';
 import { processPageContent } from './transformers';
 
-class RecordProcessorState implements IProcessorState, IJsonSerializable {
+class RecordProcessorState extends ProcessorState implements IProcessorState, IJsonSerializable {
   #logger: ILogger;
-
-  #wikiClient: IWikiClient;
 
   #headers: THeadersRecord;
 
-  constructor(logger: ILogger, processor: IProcessor, headers: THeadersRecord) {
-    this.#logger = logger.fork(LoggerLabels.PROCESSOR_STATE_RECORDS);
+  constructor(logger: ILogger, headers: THeadersRecord) {
+    super();
 
-    this.#wikiClient = processor.getWikiClient(); // TODO: use DI?
+    this.#logger = logger.fork(LoggerLabels.PROCESSOR_STATE_RECORDS);
 
     this.#headers = headers;
   }
 
-  async handle(record: string[]): Promise<void> {
-    this.#logger.debug('Handling record', record);
+  async consume(processor: IProcessor): Promise<void> {
+    const wikiClient = processor.getWikiClient();
+
+    const record = processor.readStream();
 
     this.#logger.debug('Validating record', record);
 
@@ -36,12 +36,12 @@ class RecordProcessorState implements IProcessorState, IJsonSerializable {
 
       const parsedRecord = parseRecord(record, this.#headers);
 
-      const pageContent = await this.#wikiClient.getPageContent(parsedRecord.pagename); // TODO: [error, pageContent]
+      const pageContent = await wikiClient.getPageContent(parsedRecord.pagename); // TODO: [error, pageContent]
 
       const updatedPageContent = processPageContent(pageContent, parsedRecord.content);
 
       if (updatedPageContent !== pageContent) {
-        await this.#wikiClient.editPage(parsedRecord.pagename, updatedPageContent);
+        await wikiClient.editPage(parsedRecord.pagename, updatedPageContent);
       }
     } else {
       this.#logger.debug('Record', record, 'is not a valid record');
