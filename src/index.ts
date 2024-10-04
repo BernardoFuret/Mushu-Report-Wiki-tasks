@@ -1,12 +1,11 @@
-import { createReadStream } from 'node:fs';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { parse } from 'csv-parse';
-
 import { LoggerLabels } from './constants/logger';
-import Processor from './processors/Processor';
+import { CsvStreamerProcessor } from './libs/csv/processors';
+import { CsvWithHeadersStrategy } from './libs/csv/strategies';
 import WikiClient from './services/wikiClient';
+import CardTemplateVisitor from './tasks/cardTemplate/cardTemplateVisitor';
 import config from './config';
 import { getDataFilePath } from './helpers';
 import Logger from './logger';
@@ -15,28 +14,27 @@ const srcDirname = dirname(fileURLToPath(import.meta.url));
 
 const logger = Logger.create({ srcDirname, label: LoggerLabels.MAIN });
 
-const stream = createReadStream(getDataFilePath(srcDirname, config.csvFileName)).pipe(parse());
+const csvFilePath = getDataFilePath(srcDirname, config.csvFileName);
 
 const wikiClient = new WikiClient(logger, {
   username: 'TODO',
   password: 'TODO',
 });
 
-const processor = new Processor(logger, wikiClient);
+const cardTemplateVisitor = new CardTemplateVisitor(logger, wikiClient);
+
+const strategy = new CsvWithHeadersStrategy(logger, cardTemplateVisitor);
+
+const processor = new CsvStreamerProcessor(logger, csvFilePath, strategy);
 
 logger.info('Starting');
 
 logger.info('Reading from file', config.csvFileName);
 
-// eslint-disable-next-line no-restricted-syntax
-for await (const record of stream) {
-  try {
-    await processor.process(record);
-  } catch (e) {
-    logger.error('Caught unexpected error:', e);
-
-    break;
-  }
+try {
+  await processor.process();
+} catch (error) {
+  logger.error(error);
+} finally {
+  logger.info('Finished');
 }
-
-logger.info('Finished');
