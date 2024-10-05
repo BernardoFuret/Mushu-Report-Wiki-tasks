@@ -1,5 +1,6 @@
 import { LoggerLabels } from '@/constants/logger';
 import { type ILogger } from '@/logger/types';
+import { type IStreamReader } from '@/services/streamReader';
 import { type IJsonSerializable } from '@/types';
 
 import { type IProcessor } from '../../types';
@@ -9,7 +10,10 @@ import { type IProcessorState, type THeadersRecord } from '../types';
 import { isValidRecord, parseRecord } from './helpers';
 import { processPageContent } from './transformers';
 
-class RecordProcessorState extends ProcessorState implements IProcessorState, IJsonSerializable {
+class RecordProcessorState
+  extends ProcessorState<string[]>
+  implements IProcessorState<string[]>, IJsonSerializable
+{
   #logger: ILogger;
 
   #headers: THeadersRecord;
@@ -22,10 +26,13 @@ class RecordProcessorState extends ProcessorState implements IProcessorState, IJ
     this.#headers = headers;
   }
 
-  async consume(processor: IProcessor): Promise<void> {
+  async consume(
+    processor: IProcessor<string[]>,
+    streamReader: IStreamReader<string[]>,
+  ): Promise<void> {
     const wikiClient = processor.getWikiClient();
 
-    const record = processor.readStream();
+    const record = streamReader.readStream();
 
     this.#logger.debug('Validating record', record);
 

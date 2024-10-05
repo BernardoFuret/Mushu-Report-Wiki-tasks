@@ -1,5 +1,6 @@
 import { LoggerLabels } from '@/constants/logger';
 import { type ILogger } from '@/logger';
+import { type IStreamReader } from '@/services/streamReader';
 import { type IJsonSerializable } from '@/types';
 
 import { type IProcessor } from '../types';
@@ -12,7 +13,10 @@ const isValidHeadersRecord = (record: string[]): record is THeadersRecord => {
   return !!record[1]?.trim();
 };
 
-class HeadersProcessorState extends ProcessorState implements IProcessorState, IJsonSerializable {
+class HeadersProcessorState
+  extends ProcessorState<string[]>
+  implements IProcessorState<string[]>, IJsonSerializable
+{
   #logger: ILogger;
 
   constructor(logger: ILogger) {
@@ -21,8 +25,11 @@ class HeadersProcessorState extends ProcessorState implements IProcessorState, I
     this.#logger = logger.fork(LoggerLabels.PROCESSOR_STATE_HEADERS);
   }
 
-  async consume(processor: IProcessor): Promise<void> {
-    const record = processor.readStream();
+  async consume(
+    processor: IProcessor<string[]>,
+    streamReader: IStreamReader<string[]>,
+  ): Promise<void> {
+    const record = streamReader.readStream();
 
     this.#logger.info('Handling record', record);
 

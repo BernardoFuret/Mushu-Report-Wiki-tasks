@@ -1,7 +1,9 @@
+import { type IStreamReader } from '@/services/streamReader';
+
 import { type IProcessor } from '../types';
 
-interface IProcessorState {
-  consume(processor: IProcessor): Promise<void>;
+interface IProcessorState<T> {
+  consume(processor: IProcessor<T>, streamReader: IStreamReader<T>): Promise<void>;
   checkIsFinalState(): boolean;
 }
 
