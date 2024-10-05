@@ -46,7 +46,7 @@ class HeadersProcessorState
 
       // TODO: update state?
       throw new Error(
-        'Invalid headers. Expected headers record to have a pagename header and at least one template parameter header',
+        'Invalid headers. Expected headers record to have at least one template parameter header',
         { cause: { record } },
       );
     }

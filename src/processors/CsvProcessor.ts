@@ -52,7 +52,7 @@ class CsvProcessor implements IProcessor<string[]>, IJsonSerializable {
       return readable.pipe(parse());
     });
 
-    await streamReader.initStream();
+    await streamReader.initStream(); // TODO: close stream on unexpected error?
 
     while (!(this.#state.checkIsFinalState() || streamReader.checkHasEnded())) {
       // eslint-disable-next-line no-await-in-loop
