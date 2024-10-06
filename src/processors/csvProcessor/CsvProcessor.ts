@@ -10,6 +10,7 @@ import { type IJsonSerializable } from '@/types';
 import { type IProcessor } from '../types';
 
 import { type ICsvProcessorState } from './states/types';
+import { type IProcessorStrategy } from './strategies/types';
 
 class CsvProcessor implements IProcessor, IJsonSerializable {
   #logger: ILogger;
@@ -23,14 +24,14 @@ class CsvProcessor implements IProcessor, IJsonSerializable {
   constructor(
     logger: ILogger,
     csvFilePath: string,
-    initialState: ICsvProcessorState,
+    strategy: IProcessorStrategy<ICsvProcessorState>,
     wikiClient: IWikiClient,
   ) {
     this.#logger = logger.fork(LoggerLabels.CSV_PROCESSOR);
 
     this.#wikiClient = wikiClient;
 
-    this.#state = initialState;
+    this.#state = strategy.buildInitialState(this);
 
     this.#csvFilePath = csvFilePath;
   }
@@ -54,7 +55,7 @@ class CsvProcessor implements IProcessor, IJsonSerializable {
 
     // eslint-disable-next-line no-restricted-syntax
     for await (const record of readable) {
-      await this.#state.consume(this, record);
+      await this.#state.consume(record);
     }
   }
 

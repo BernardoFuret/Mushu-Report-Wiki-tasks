@@ -1,6 +1,5 @@
 import { LoggerLabels } from '@/constants/logger';
 import { type ILogger } from '@/logger/types';
-import { type IWikiClient } from '@/services/wikiClient';
 import { type IJsonSerializable } from '@/types';
 
 import { type IProcessor } from '../../../types';
@@ -14,16 +13,22 @@ import { type TRecord } from './types';
 class RecordProcessorState implements ICsvProcessorState, IJsonSerializable {
   #logger: ILogger;
 
+  #processor: IProcessor;
+
   #headers: THeadersRecord;
 
-  constructor(logger: ILogger, headers: THeadersRecord) {
+  constructor(logger: ILogger, processor: IProcessor, headers: THeadersRecord) {
     this.#logger = logger.fork(LoggerLabels.PROCESSOR_STATE_RECORDS);
 
     this.#headers = headers;
+
+    this.#processor = processor;
   }
 
-  async #handleValidRecord(record: TRecord, wikiClient: IWikiClient) {
+  async #handleValidRecord(record: TRecord) {
     const parsedRecord = parseRecord(record, this.#headers);
+
+    const wikiClient = this.#processor.getWikiClient();
 
     const pageContent = await wikiClient.getPageContent(parsedRecord.pagename);
 
@@ -34,7 +39,7 @@ class RecordProcessorState implements ICsvProcessorState, IJsonSerializable {
     }
   }
 
-  async consume(processor: IProcessor, record: string[]): Promise<void> {
+  async consume(record: string[]): Promise<void> {
     this.#logger.info('Handling record', record);
 
     this.#logger.debug('Validating record', record);
@@ -43,9 +48,7 @@ class RecordProcessorState implements ICsvProcessorState, IJsonSerializable {
       this.#logger.debug('Record', record, 'is a valid record');
 
       try {
-        const wikiClient = processor.getWikiClient(); // TODO: states should receive processor on instantation
-
-        await this.#handleValidRecord(record, wikiClient);
+        await this.#handleValidRecord(record);
       } catch (error) {
         this.#logger.error('Error handling record', record, error);
       }

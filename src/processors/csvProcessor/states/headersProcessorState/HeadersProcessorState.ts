@@ -22,12 +22,15 @@ const isValidHeadersRecord = (record: string[]): record is THeadersRecord => {
 class HeadersProcessorState implements ICsvProcessorState, IJsonSerializable {
   #logger: ILogger;
 
-  constructor(logger: ILogger) {
+  #processor: IProcessor;
+
+  constructor(logger: ILogger, processor: IProcessor) {
     this.#logger = logger.fork(LoggerLabels.PROCESSOR_STATE_HEADERS);
+
+    this.#processor = processor;
   }
 
-  // TODO: Move processor to constructor?
-  async consume(processor: IProcessor, record: string[]): Promise<void> {
+  async consume(record: string[]): Promise<void> {
     this.#logger.info('Handling record', record);
 
     this.#logger.debug('Validating record', record, 'as a headers record');
@@ -35,13 +38,12 @@ class HeadersProcessorState implements ICsvProcessorState, IJsonSerializable {
     if (isValidHeadersRecord(record)) {
       this.#logger.debug('Record', record, 'is a valid headers record');
 
-      const nextState = new RecordProcessorState(this.#logger, record);
+      const nextState = new RecordProcessorState(this.#logger, this.#processor, record);
 
-      processor.updateState(nextState);
+      this.#processor.updateState(nextState);
     } else {
       this.#logger.debug('Record', record, 'is not a valid headers record');
 
-      // TODO: update state?
       throw new Error(
         'Invalid headers. Expected headers record to have at least one template parameter header',
         { cause: { record } },
