@@ -2,9 +2,9 @@ import { LoggerLabels } from '@/constants/logger';
 import { type ILogger } from '@/logger';
 import { type IJsonSerializable } from '@/types';
 
-import { type IProcessor } from '../../types';
+import { type IProcessor } from '../../../types';
 import RecordProcessorState from '../recordProcessorState';
-import { type IProcessorState } from '../types';
+import { type ICsvProcessorState } from '../types';
 
 import { type THeadersRecord } from './types';
 
@@ -19,7 +19,7 @@ const isValidHeadersRecord = (record: string[]): record is THeadersRecord => {
   return !!recordRest.length && !recordRest.some((recordPart) => !recordPart.trim());
 };
 
-class HeadersProcessorState implements IProcessorState<string[]>, IJsonSerializable {
+class HeadersProcessorState implements ICsvProcessorState, IJsonSerializable {
   #logger: ILogger;
 
   constructor(logger: ILogger) {
@@ -27,7 +27,7 @@ class HeadersProcessorState implements IProcessorState<string[]>, IJsonSerializa
   }
 
   // TODO: Move processor to constructor?
-  async consume(processor: IProcessor<string[]>, record: string[]): Promise<void> {
+  async consume(processor: IProcessor, record: string[]): Promise<void> {
     this.#logger.info('Handling record', record);
 
     this.#logger.debug('Validating record', record, 'as a headers record');

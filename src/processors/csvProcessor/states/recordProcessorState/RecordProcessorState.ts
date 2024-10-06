@@ -3,15 +3,15 @@ import { type ILogger } from '@/logger/types';
 import { type IWikiClient } from '@/services/wikiClient';
 import { type IJsonSerializable } from '@/types';
 
-import { type IProcessor } from '../../types';
+import { type IProcessor } from '../../../types';
 import { type THeadersRecord } from '../headersProcessorState';
-import { type IProcessorState } from '../types';
+import { type ICsvProcessorState } from '../types';
 
 import { isValidRecord, parseRecord } from './helpers';
 import { processPageContent } from './transformers';
 import { type TRecord } from './types';
 
-class RecordProcessorState implements IProcessorState<string[]>, IJsonSerializable {
+class RecordProcessorState implements ICsvProcessorState, IJsonSerializable {
   #logger: ILogger;
 
   #headers: THeadersRecord;
@@ -34,7 +34,7 @@ class RecordProcessorState implements IProcessorState<string[]>, IJsonSerializab
     }
   }
 
-  async consume(processor: IProcessor<string[]>, record: string[]): Promise<void> {
+  async consume(processor: IProcessor, record: string[]): Promise<void> {
     this.#logger.info('Handling record', record);
 
     this.#logger.debug('Validating record', record);

@@ -7,22 +7,23 @@ import { type ILogger } from '@/logger/types';
 import { type IWikiClient } from '@/services/wikiClient';
 import { type IJsonSerializable } from '@/types';
 
-import { type IProcessorState } from './states/types';
-import { type IProcessor } from './types';
+import { type IProcessor } from '../types';
 
-class CsvProcessor implements IProcessor<string[]>, IJsonSerializable {
+import { type ICsvProcessorState } from './states/types';
+
+class CsvProcessor implements IProcessor, IJsonSerializable {
   #logger: ILogger;
 
   #wikiClient: IWikiClient;
 
-  #state: IProcessorState<string[]>;
+  #state: ICsvProcessorState;
 
   #csvFilePath: string;
 
   constructor(
     logger: ILogger,
     csvFilePath: string,
-    initialState: IProcessorState<string[]>,
+    initialState: ICsvProcessorState,
     wikiClient: IWikiClient,
   ) {
     this.#logger = logger.fork(LoggerLabels.CSV_PROCESSOR);
@@ -38,7 +39,7 @@ class CsvProcessor implements IProcessor<string[]>, IJsonSerializable {
     return this.#wikiClient;
   }
 
-  updateState(state: IProcessorState<string[]>): this {
+  updateState(state: ICsvProcessorState): this {
     this.#logger.debug('Updating state from', this.#state, 'to', state);
 
     this.#state = state;
