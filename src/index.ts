@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 
 import { LoggerLabels } from './constants/logger';
 import CsvProcessor from './processors/CsvProcessor';
-import HeadersProcessorState from './processors/states/HeadersProcessorState';
+import HeadersProcessorState from './processors/states/headersProcessorState';
 import WikiClient from './services/wikiClient';
 import config from './config';
 import { getDataFilePath } from './helpers';

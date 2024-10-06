@@ -2,10 +2,11 @@ import { LoggerLabels } from '@/constants/logger';
 import { type ILogger } from '@/logger';
 import { type IJsonSerializable } from '@/types';
 
-import { type IProcessor } from '../types';
+import { type IProcessor } from '../../types';
+import RecordProcessorState from '../recordProcessorState';
+import { type IProcessorState } from '../types';
 
-import RecordProcessorState from './recordProcessorState';
-import { type IProcessorState, type THeadersRecord } from './types';
+import { type THeadersRecord } from './types';
 
 /**
  * The first entry of the record is the pagename and is not necessary to be filed

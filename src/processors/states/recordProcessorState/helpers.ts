@@ -1,4 +1,4 @@
-import { type THeadersRecord } from '../types';
+import { type THeadersRecord } from '../headersProcessorState';
 
 import { type IParsedRecord, type TRecord } from './types';
 

@@ -4,7 +4,8 @@ import { type IWikiClient } from '@/services/wikiClient';
 import { type IJsonSerializable } from '@/types';
 
 import { type IProcessor } from '../../types';
-import { type IProcessorState, type THeadersRecord } from '../types';
+import { type THeadersRecord } from '../headersProcessorState';
+import { type IProcessorState } from '../types';
 
 import { isValidRecord, parseRecord } from './helpers';
 import { processPageContent } from './transformers';
