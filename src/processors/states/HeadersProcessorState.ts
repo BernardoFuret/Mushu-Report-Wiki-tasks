@@ -7,8 +7,15 @@ import { type IProcessor } from '../types';
 import RecordProcessorState from './recordProcessorState';
 import { type IProcessorState, type THeadersRecord } from './types';
 
-const isValidHeadersRecord = (record: string[] | null): record is THeadersRecord => {
-  return !!record?.[1]?.trim();
+/**
+ * The first entry of the record is the pagename and is not necessary to be filed
+ * on the headers record. But at least one more entry is needed and all entries
+ * must not be empty.
+ */
+const isValidHeadersRecord = (record: string[]): record is THeadersRecord => {
+  const [, ...recordRest] = record;
+
+  return !!recordRest.length && !recordRest.some((recordPart) => !recordPart.trim());
 };
 
 class HeadersProcessorState implements IProcessorState<string[]>, IJsonSerializable {
