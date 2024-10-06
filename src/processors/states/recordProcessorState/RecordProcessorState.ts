@@ -1,28 +1,21 @@
 import { LoggerLabels } from '@/constants/logger';
 import { type ILogger } from '@/logger/types';
-import { type IStreamReader } from '@/services/streamReader';
 import { type IWikiClient } from '@/services/wikiClient';
 import { type IJsonSerializable } from '@/types';
 
 import { type IProcessor } from '../../types';
-import ProcessorState from '../ProcessorState';
 import { type IProcessorState, type THeadersRecord } from '../types';
 
 import { isValidRecord, parseRecord } from './helpers';
 import { processPageContent } from './transformers';
 import { type TRecord } from './types';
 
-class RecordProcessorState
-  extends ProcessorState<string[]>
-  implements IProcessorState<string[]>, IJsonSerializable
-{
+class RecordProcessorState implements IProcessorState<string[]>, IJsonSerializable {
   #logger: ILogger;
 
   #headers: THeadersRecord;
 
   constructor(logger: ILogger, headers: THeadersRecord) {
-    super();
-
     this.#logger = logger.fork(LoggerLabels.PROCESSOR_STATE_RECORDS);
 
     this.#headers = headers;
@@ -40,12 +33,7 @@ class RecordProcessorState
     }
   }
 
-  async consume(
-    processor: IProcessor<string[]>,
-    streamReader: IStreamReader<string[]>,
-  ): Promise<void> {
-    const record = streamReader.readStream();
-
+  async consume(processor: IProcessor<string[]>, record: string[]): Promise<void> {
     this.#logger.info('Handling record', record);
 
     this.#logger.debug('Validating record', record);

@@ -1,8 +1,9 @@
+import { createReadStream } from 'node:fs';
+
 import { parse } from 'csv-parse';
 
 import { LoggerLabels } from '@/constants/logger';
 import { type ILogger } from '@/logger/types';
-import StreamReader from '@/services/streamReader';
 import { type IWikiClient } from '@/services/wikiClient';
 import { type IJsonSerializable } from '@/types';
 
@@ -48,15 +49,11 @@ class CsvProcessor implements IProcessor<string[]>, IJsonSerializable {
   async process(): Promise<void> {
     this.#logger.info('Starting processing data');
 
-    const streamReader = new StreamReader<string[]>(this.#logger, this.#csvFilePath, (readable) => {
-      return readable.pipe(parse());
-    });
+    const readable = createReadStream(this.#csvFilePath).pipe(parse());
 
-    await streamReader.initStream(); // TODO: close stream on unexpected error?
-
-    while (!(this.#state.checkIsFinalState() || streamReader.checkHasEnded())) {
-      // eslint-disable-next-line no-await-in-loop
-      await this.#state.consume(this, streamReader);
+    // eslint-disable-next-line no-restricted-syntax
+    for await (const record of readable) {
+      await this.#state.consume(this, record);
     }
   }
 
