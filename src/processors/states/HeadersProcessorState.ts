@@ -9,8 +9,8 @@ import ProcessorState from './ProcessorState';
 import RecordProcessorState from './recordProcessorState';
 import { type IProcessorState, type THeadersRecord } from './types';
 
-const isValidHeadersRecord = (record: string[]): record is THeadersRecord => {
-  return !!record[1]?.trim();
+const isValidHeadersRecord = (record: string[] | null): record is THeadersRecord => {
+  return !!record?.[1]?.trim();
 };
 
 class HeadersProcessorState

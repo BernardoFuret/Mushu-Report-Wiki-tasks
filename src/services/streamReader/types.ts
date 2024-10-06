@@ -2,7 +2,7 @@ import { type Readable } from 'stream';
 
 interface IStreamReader<T> {
   initStream(): Promise<void>;
-  readStream(): T;
+  readStream(): T | null;
   checkHasEnded(): boolean;
 }
 

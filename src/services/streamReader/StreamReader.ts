@@ -25,7 +25,7 @@ class StreamReader<T> implements IStreamReader<T> {
     });
   }
 
-  readStream(): T {
+  readStream(): T | null {
     this.#logger.debug('Reading stream');
 
     return this.#stream.read();

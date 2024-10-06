@@ -2,8 +2,8 @@ import { type THeadersRecord } from '../types';
 
 import { type IParsedRecord, type TRecord } from './types';
 
-const isValidRecord = (record: string[]): record is TRecord => {
-  return !!record[0]?.trim();
+const isValidRecord = (record: string[] | null): record is TRecord => {
+  return !!record?.[0]?.trim();
 };
 
 const parseRecord = (record: TRecord, headers: THeadersRecord): IParsedRecord => {
