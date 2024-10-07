@@ -1,5 +1,5 @@
-interface IVistorAcceptor {
-  accept(visitor: ICsvWithHeadersVisitor): Promise<void>;
+interface IVistorAcceptor<TVisitor> {
+  accept(visitor: TVisitor): Promise<void>;
 }
 
 interface ICsvWithHeadersVisitor {

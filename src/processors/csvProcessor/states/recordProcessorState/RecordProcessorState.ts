@@ -1,11 +1,13 @@
 import { LoggerLabels } from '@/constants/logger';
 import { type ILogger } from '@/logger/types';
 import { type IJsonSerializable } from '@/types';
-import { type IVistorAcceptor } from '@/visitors/types';
+import { type ICsvWithHeadersVisitor, type IVistorAcceptor } from '@/visitors/types';
 
 import { type ICsvProcessorState } from '../types';
 
-class RecordProcessorState implements ICsvProcessorState, IJsonSerializable {
+class RecordProcessorState
+  implements ICsvProcessorState<ICsvWithHeadersVisitor>, IJsonSerializable
+{
   #logger: ILogger;
 
   #headers: string[];
@@ -16,7 +18,7 @@ class RecordProcessorState implements ICsvProcessorState, IJsonSerializable {
     this.#headers = headers;
   }
 
-  consume(record: string[]): IVistorAcceptor {
+  consume(record: string[]): IVistorAcceptor<ICsvWithHeadersVisitor> {
     this.#logger.debug('Consuming record', record);
 
     return {

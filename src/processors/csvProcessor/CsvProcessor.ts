@@ -12,26 +12,32 @@ import { type IProcessor } from '../types';
 import { type ICsvProcessorState } from './states/types';
 import { type IProcessorStrategy } from './strategies/types';
 
-class CsvProcessor implements IProcessor, IJsonSerializable {
+class CsvProcessor<
+    TVisitor extends ICsvWithHeadersVisitor,
+    TState extends ICsvProcessorState<TVisitor>,
+    TStrategy extends IProcessorStrategy<TVisitor, TState>,
+  >
+  implements IProcessor<TState>, IJsonSerializable
+{
   #logger: ILogger;
-
-  #state: ICsvProcessorState;
 
   #csvFilePath: string;
 
-  constructor(
-    logger: ILogger,
-    csvFilePath: string,
-    strategy: IProcessorStrategy<ICsvProcessorState>,
-  ) {
+  #state: TState;
+
+  #strategy: TStrategy;
+
+  constructor(logger: ILogger, csvFilePath: string, strategy: TStrategy) {
     this.#logger = logger.fork(LoggerLabels.CSV_PROCESSOR);
+
+    this.#strategy = strategy;
 
     this.#state = strategy.buildInitialState(this);
 
     this.#csvFilePath = csvFilePath;
   }
 
-  updateState(state: ICsvProcessorState): this {
+  updateState(state: TState): this {
     this.#logger.debug('Updating state from', this.#state, 'to', state);
 
     this.#state = state;
@@ -39,14 +45,14 @@ class CsvProcessor implements IProcessor, IJsonSerializable {
     return this;
   }
 
-  async process(visitor: ICsvWithHeadersVisitor): Promise<void> {
+  async process(): Promise<void> {
     this.#logger.info('Starting processing data');
 
     const readable = createReadStream(this.#csvFilePath).pipe(parse());
 
     // eslint-disable-next-line no-restricted-syntax
     for await (const record of readable) {
-      await this.#state.consume(record).accept(visitor);
+      await this.#state.consume(record).accept(this.#strategy.getVisitor());
     }
   }
 
