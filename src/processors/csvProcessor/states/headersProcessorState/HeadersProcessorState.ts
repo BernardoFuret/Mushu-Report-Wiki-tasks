@@ -1,23 +1,11 @@
 import { LoggerLabels } from '@/constants/logger';
 import { type ILogger } from '@/logger';
 import { type IJsonSerializable } from '@/types';
+import { type ICsvVisitor, type IVistorAcceptor } from '@/visitors/types';
 
 import { type IProcessor } from '../../../types';
 import RecordProcessorState from '../recordProcessorState';
 import { type ICsvProcessorState } from '../types';
-
-import { type THeadersRecord } from './types';
-
-/**
- * The first entry of the record is the pagename and is not necessary to be filed
- * on the headers record. But at least one more entry is needed and all entries
- * must not be empty.
- */
-const isValidHeadersRecord = (record: string[]): record is THeadersRecord => {
-  const [, ...recordRest] = record;
-
-  return !!recordRest.length && !recordRest.some((recordPart) => !recordPart.trim());
-};
 
 class HeadersProcessorState implements ICsvProcessorState, IJsonSerializable {
   #logger: ILogger;
@@ -30,25 +18,18 @@ class HeadersProcessorState implements ICsvProcessorState, IJsonSerializable {
     this.#processor = processor;
   }
 
-  async consume(record: string[]): Promise<void> {
-    this.#logger.info('Handling record', record);
+  consume(record: string[]): IVistorAcceptor {
+    this.#logger.debug('Consuming record', record);
 
-    this.#logger.debug('Validating record', record, 'as a headers record');
+    return {
+      accept: async (visitor: ICsvVisitor) => {
+        await visitor.visitHeadersRecord(record);
 
-    if (isValidHeadersRecord(record)) {
-      this.#logger.debug('Record', record, 'is a valid headers record');
+        const nextState = new RecordProcessorState(this.#logger, record);
 
-      const nextState = new RecordProcessorState(this.#logger, this.#processor, record);
-
-      this.#processor.updateState(nextState);
-    } else {
-      this.#logger.debug('Record', record, 'is not a valid headers record');
-
-      throw new Error(
-        'Invalid headers. Expected headers record to have at least one template parameter header',
-        { cause: { record } },
-      );
-    }
+        this.#processor.updateState(nextState);
+      },
+    };
   }
 
   toJSON(): unknown {

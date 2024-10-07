@@ -1,11 +1,10 @@
-import { type IWikiClient } from '@/services/wikiClient';
+import { type ICsvVisitor } from '@/visitors/types';
 
 import { type ICsvProcessorState } from './csvProcessor/states/types';
 
 interface IProcessor {
-  getWikiClient(): IWikiClient;
   updateState(state: ICsvProcessorState): this;
-  process(): Promise<void>;
+  process(visitor: ICsvVisitor): Promise<void>;
 }
 
 export type { IProcessor };

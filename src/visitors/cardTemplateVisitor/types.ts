@@ -1,5 +1,3 @@
-type TRecord = [string, ...string[]];
-
 type TCardTemplateParameters = Record<string, string>;
 
 interface IParsedRecord {
@@ -7,4 +5,4 @@ interface IParsedRecord {
   content: Record<string, string>;
 }
 
-export type { IParsedRecord, TCardTemplateParameters, TRecord };
+export type { IParsedRecord, TCardTemplateParameters };

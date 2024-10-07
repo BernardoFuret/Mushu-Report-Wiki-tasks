@@ -5,6 +5,7 @@ import { LoggerLabels } from './constants/logger';
 import CsvProcessor from './processors/csvProcessor';
 import CsvWithHeadersStrategy from './processors/csvProcessor/strategies/csvWithHeadersStrategy';
 import WikiClient from './services/wikiClient';
+import CardTemplateVisitor from './visitors/cardTemplateVisitor/CardTemplateVisitor';
 import config from './config';
 import { getDataFilePath } from './helpers';
 import Logger from './logger';
@@ -22,14 +23,16 @@ const wikiClient = new WikiClient(logger, {
   password: 'TODO',
 });
 
-const processor = new CsvProcessor(logger, csvFilePath, strategy, wikiClient);
+const cardTemplateVisitor = new CardTemplateVisitor(logger, wikiClient);
+
+const processor = new CsvProcessor(logger, csvFilePath, strategy);
 
 logger.info('Starting');
 
 logger.info('Reading from file', config.csvFileName);
 
 try {
-  await processor.process();
+  await processor.process(cardTemplateVisitor);
 } catch (error) {
   logger.error(error);
 } finally {

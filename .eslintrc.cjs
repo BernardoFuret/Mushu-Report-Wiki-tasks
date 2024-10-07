@@ -26,6 +26,7 @@ module.exports = {
   rules: {
     ...commonRules,
 
+    'max-classes-per-file': ['error', { ignoreExpressions: true }],
     'no-console': 'error',
     'no-sequences': ['error', { allowInParentheses: false }],
     'no-restricted-exports': ['error', { restrictedNamedExports: ['then'] }],

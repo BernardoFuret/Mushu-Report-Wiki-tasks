@@ -4,8 +4,8 @@ import { parse } from 'csv-parse';
 
 import { LoggerLabels } from '@/constants/logger';
 import { type ILogger } from '@/logger/types';
-import { type IWikiClient } from '@/services/wikiClient';
 import { type IJsonSerializable } from '@/types';
+import { type ICsvVisitor } from '@/visitors/types';
 
 import { type IProcessor } from '../types';
 
@@ -15,8 +15,6 @@ import { type IProcessorStrategy } from './strategies/types';
 class CsvProcessor implements IProcessor, IJsonSerializable {
   #logger: ILogger;
 
-  #wikiClient: IWikiClient;
-
   #state: ICsvProcessorState;
 
   #csvFilePath: string;
@@ -25,19 +23,12 @@ class CsvProcessor implements IProcessor, IJsonSerializable {
     logger: ILogger,
     csvFilePath: string,
     strategy: IProcessorStrategy<ICsvProcessorState>,
-    wikiClient: IWikiClient,
   ) {
     this.#logger = logger.fork(LoggerLabels.CSV_PROCESSOR);
-
-    this.#wikiClient = wikiClient;
 
     this.#state = strategy.buildInitialState(this);
 
     this.#csvFilePath = csvFilePath;
-  }
-
-  getWikiClient(): IWikiClient {
-    return this.#wikiClient;
   }
 
   updateState(state: ICsvProcessorState): this {
@@ -48,14 +39,14 @@ class CsvProcessor implements IProcessor, IJsonSerializable {
     return this;
   }
 
-  async process(): Promise<void> {
+  async process(visitor: ICsvVisitor): Promise<void> {
     this.#logger.info('Starting processing data');
 
     const readable = createReadStream(this.#csvFilePath).pipe(parse());
 
     // eslint-disable-next-line no-restricted-syntax
     for await (const record of readable) {
-      await this.#state.consume(record);
+      await this.#state.consume(record).accept(visitor);
     }
   }
 
