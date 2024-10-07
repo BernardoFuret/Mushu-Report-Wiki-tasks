@@ -5,7 +5,7 @@ import { parse } from 'csv-parse';
 import { LoggerLabels } from '@/constants/logger';
 import { type ILogger } from '@/logger/types';
 import { type IJsonSerializable } from '@/types';
-import { type ICsvVisitor } from '@/visitors/types';
+import { type ICsvWithHeadersVisitor } from '@/visitors/types';
 
 import { type IProcessor } from '../types';
 
@@ -39,7 +39,7 @@ class CsvProcessor implements IProcessor, IJsonSerializable {
     return this;
   }
 
-  async process(visitor: ICsvVisitor): Promise<void> {
+  async process(visitor: ICsvWithHeadersVisitor): Promise<void> {
     this.#logger.info('Starting processing data');
 
     const readable = createReadStream(this.#csvFilePath).pipe(parse());

@@ -1,11 +1,10 @@
 interface IVistorAcceptor {
-  accept(visitor: ICsvVisitor): Promise<void>;
+  accept(visitor: ICsvWithHeadersVisitor): Promise<void>;
 }
 
-// TODO: Csv Visitor for the CsvWithHeadersStrategy only
-interface ICsvVisitor {
+interface ICsvWithHeadersVisitor {
   visitHeadersRecord(record: string[]): Promise<void>;
   visitDataRecord(record: string[], headersRecord: string[]): Promise<void>;
 }
 
-export type { ICsvVisitor, IVistorAcceptor };
+export type { ICsvWithHeadersVisitor, IVistorAcceptor };

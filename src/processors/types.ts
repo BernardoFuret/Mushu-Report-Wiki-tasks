@@ -1,10 +1,10 @@
-import { type ICsvVisitor } from '@/visitors/types';
+import { type ICsvWithHeadersVisitor } from '@/visitors/types';
 
 import { type ICsvProcessorState } from './csvProcessor/states/types';
 
 interface IProcessor {
   updateState(state: ICsvProcessorState): this;
-  process(visitor: ICsvVisitor): Promise<void>;
+  process(visitor: ICsvWithHeadersVisitor): Promise<void>;
 }
 
 export type { IProcessor };

@@ -2,12 +2,12 @@ import { LoggerLabels } from '@/constants/logger';
 import { type ILogger } from '@/logger';
 import { type IWikiClient } from '@/services/wikiClient';
 
-import { type ICsvVisitor } from '../types';
+import { type ICsvWithHeadersVisitor } from '../types';
 
 import { isValidDataRecord, isValidHeadersRecord, parseRecord } from './helpers';
 import { processPageContent } from './transformers';
 
-class CardTemplateVisitor implements ICsvVisitor {
+class CardTemplateVisitor implements ICsvWithHeadersVisitor {
   #logger: ILogger;
 
   #wikiClient: IWikiClient;

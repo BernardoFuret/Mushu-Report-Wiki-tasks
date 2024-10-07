@@ -1,7 +1,7 @@
 import { LoggerLabels } from '@/constants/logger';
 import { type ILogger } from '@/logger';
 import { type IJsonSerializable } from '@/types';
-import { type ICsvVisitor, type IVistorAcceptor } from '@/visitors/types';
+import { type IVistorAcceptor } from '@/visitors/types';
 
 import { type IProcessor } from '../../../types';
 import RecordProcessorState from '../recordProcessorState';
@@ -22,7 +22,7 @@ class HeadersProcessorState implements ICsvProcessorState, IJsonSerializable {
     this.#logger.debug('Consuming record', record);
 
     return {
-      accept: async (visitor: ICsvVisitor) => {
+      accept: async (visitor) => {
         await visitor.visitHeadersRecord(record);
 
         const nextState = new RecordProcessorState(this.#logger, record);
