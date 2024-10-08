@@ -1,9 +1,9 @@
 import { LoggerLabels } from '@/constants/logger';
 import { type ILogger } from '@/logger';
 import { type IJsonSerializable } from '@/types';
-import { type ICsvWithHeadersVisitor, type IVistorAcceptor } from '@/visitors/types';
 
-import { type IProcessor } from '../../../types';
+import { type IProcessor } from '../../csvProcessor';
+import { type ICsvWithHeadersVisitor, type IVistorAcceptor } from '../../visitors';
 import RecordProcessorState from '../recordProcessorState';
 import { type ICsvProcessorState } from '../types';
 

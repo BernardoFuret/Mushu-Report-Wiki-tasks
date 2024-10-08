@@ -3,14 +3,14 @@ import { createReadStream } from 'node:fs';
 import { parse } from 'csv-parse';
 
 import { LoggerLabels } from '@/constants/logger';
-import { type ILogger } from '@/logger/types';
+import { type ILogger } from '@/logger';
 import { type IJsonSerializable } from '@/types';
-import { type ICsvWithHeadersVisitor } from '@/visitors/types';
 
-import { type IProcessor } from '../types';
+import { type ICsvProcessorState } from '../states';
+import { type IProcessorStrategy } from '../strategies';
+import { type ICsvWithHeadersVisitor } from '../visitors';
 
-import { type ICsvProcessorState } from './states/types';
-import { type IProcessorStrategy } from './strategies/types';
+import { type IProcessor } from './types';
 
 class CsvProcessor<
     TVisitor extends ICsvWithHeadersVisitor,

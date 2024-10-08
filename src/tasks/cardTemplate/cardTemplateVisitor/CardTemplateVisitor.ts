@@ -1,8 +1,7 @@
 import { LoggerLabels } from '@/constants/logger';
+import { type ICsvWithHeadersVisitor } from '@/libs/csv/visitors';
 import { type ILogger } from '@/logger';
 import { type IWikiClient } from '@/services/wikiClient';
-
-import { type ICsvWithHeadersVisitor } from '../types';
 
 import { isValidDataRecord, isValidHeadersRecord, parseRecord } from './helpers';
 import { processPageContent } from './transformers';

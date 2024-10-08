@@ -1,8 +1,8 @@
 import { LoggerLabels } from '@/constants/logger';
-import { type ILogger } from '@/logger/types';
+import { type ILogger } from '@/logger';
 import { type IJsonSerializable } from '@/types';
-import { type ICsvWithHeadersVisitor, type IVistorAcceptor } from '@/visitors/types';
 
+import { type ICsvWithHeadersVisitor, type IVistorAcceptor } from '../../visitors';
 import { type ICsvProcessorState } from '../types';
 
 class RecordProcessorState

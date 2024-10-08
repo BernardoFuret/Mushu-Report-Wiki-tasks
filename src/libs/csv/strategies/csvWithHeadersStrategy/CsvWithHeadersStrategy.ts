@@ -1,10 +1,10 @@
 import { LoggerLabels } from '@/constants/logger';
 import { type ILogger } from '@/logger';
-import { type IProcessor } from '@/processors/types';
-import { type ICsvWithHeadersVisitor } from '@/visitors/types';
 
-import HeadersProcessorState from '../../states/headersProcessorState';
-import { type ICsvProcessorState } from '../../states/types';
+import { type IProcessor } from '../../csvProcessor';
+import { HeadersProcessorState } from '../../states';
+import { type ICsvProcessorState } from '../../states';
+import { type ICsvWithHeadersVisitor } from '../../visitors';
 import { type IProcessorStrategy } from '../types';
 
 class CsvWithHeadersStrategy

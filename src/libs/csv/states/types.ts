@@ -1,4 +1,4 @@
-import { type ICsvWithHeadersVisitor, type IVistorAcceptor } from '@/visitors/types';
+import { type ICsvWithHeadersVisitor, type IVistorAcceptor } from '../visitors';
 
 interface ICsvProcessorState<TVisitor extends ICsvWithHeadersVisitor> {
   consume(record: string[]): IVistorAcceptor<TVisitor>;

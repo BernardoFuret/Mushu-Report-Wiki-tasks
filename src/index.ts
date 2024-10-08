@@ -2,10 +2,10 @@ import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { LoggerLabels } from './constants/logger';
-import CsvProcessor from './processors/csvProcessor';
-import CsvWithHeadersStrategy from './processors/csvProcessor/strategies/csvWithHeadersStrategy';
+import CsvProcessor from './libs/csv/csvProcessor';
+import { CsvWithHeadersStrategy } from './libs/csv/strategies';
 import WikiClient from './services/wikiClient';
-import CardTemplateVisitor from './visitors/cardTemplateVisitor/CardTemplateVisitor'; // TODO
+import CardTemplateVisitor from './tasks/cardTemplate/cardTemplateVisitor';
 import config from './config';
 import { getDataFilePath } from './helpers';
 import Logger from './logger';

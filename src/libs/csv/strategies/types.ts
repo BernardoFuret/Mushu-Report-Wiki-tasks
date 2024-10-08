@@ -1,8 +1,8 @@
-import { type IProcessor } from '@/processors/types';
-import { type ICsvWithHeadersVisitor } from '@/visitors/types';
+import { type IProcessor } from '../csvProcessor';
+import { type ICsvProcessorState } from '../states';
+import { type ICsvWithHeadersVisitor } from '../visitors';
 
-import { type ICsvProcessorState } from '../states/types';
-
+// TODO: rename to include CSV
 interface IProcessorStrategy<
   TVisitor extends ICsvWithHeadersVisitor,
   TState extends ICsvProcessorState<TVisitor>,
