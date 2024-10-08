@@ -1,4 +1,4 @@
-import { type ICsvProcessor } from '../csvProcessor';
+import { type ICsvProcessor } from '../processors';
 import { type ICsvProcessorState } from '../states';
 import { type ICsvWithHeadersVisitor } from '../visitors';
 

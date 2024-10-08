@@ -1,7 +1,7 @@
 import { LoggerLabels } from '@/constants/logger';
 import { type ILogger } from '@/logger';
 
-import { type ICsvProcessor } from '../../csvProcessor';
+import { type ICsvProcessor } from '../../processors';
 import { HeadersProcessorState } from '../../states';
 import { type ICsvProcessorState } from '../../states';
 import { type ICsvWithHeadersVisitor } from '../../visitors';

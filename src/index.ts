@@ -2,7 +2,7 @@ import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { LoggerLabels } from './constants/logger';
-import CsvProcessor from './libs/csv/csvProcessor';
+import { CsvStreamerProcessor } from './libs/csv/processors';
 import { CsvWithHeadersStrategy } from './libs/csv/strategies';
 import WikiClient from './services/wikiClient';
 import CardTemplateVisitor from './tasks/cardTemplate/cardTemplateVisitor';
@@ -25,7 +25,7 @@ const cardTemplateVisitor = new CardTemplateVisitor(logger, wikiClient);
 
 const strategy = new CsvWithHeadersStrategy(logger, cardTemplateVisitor);
 
-const processor = new CsvProcessor(logger, csvFilePath, strategy);
+const processor = new CsvStreamerProcessor(logger, csvFilePath, strategy);
 
 logger.info('Starting');
 
