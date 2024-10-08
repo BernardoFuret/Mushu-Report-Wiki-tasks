@@ -2,7 +2,7 @@ import { LoggerLabels } from '@/constants/logger';
 import { type ILogger } from '@/logger';
 import { type IJsonSerializable } from '@/types';
 
-import { type IProcessor } from '../../csvProcessor';
+import { type ICsvProcessor } from '../../csvProcessor';
 import { type ICsvWithHeadersVisitor, type IVistorAcceptor } from '../../visitors';
 import RecordProcessorState from '../recordProcessorState';
 import { type ICsvProcessorState } from '../types';
@@ -12,9 +12,12 @@ class HeadersProcessorState
 {
   #logger: ILogger;
 
-  #processor: IProcessor<ICsvProcessorState<ICsvWithHeadersVisitor>>;
+  #processor: ICsvProcessor<ICsvProcessorState<ICsvWithHeadersVisitor>>;
 
-  constructor(logger: ILogger, processor: IProcessor<ICsvProcessorState<ICsvWithHeadersVisitor>>) {
+  constructor(
+    logger: ILogger,
+    processor: ICsvProcessor<ICsvProcessorState<ICsvWithHeadersVisitor>>,
+  ) {
     this.#logger = logger.fork(LoggerLabels.PROCESSOR_STATE_HEADERS);
 
     this.#processor = processor;

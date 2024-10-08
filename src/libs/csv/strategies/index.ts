@@ -1,2 +1,2 @@
 export { default as CsvWithHeadersStrategy } from './csvWithHeadersStrategy';
-export type { IProcessorStrategy } from './types';
+export type { ICsvProcessorStrategy } from './types';

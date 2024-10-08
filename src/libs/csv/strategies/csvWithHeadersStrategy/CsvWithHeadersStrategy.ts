@@ -1,14 +1,15 @@
 import { LoggerLabels } from '@/constants/logger';
 import { type ILogger } from '@/logger';
 
-import { type IProcessor } from '../../csvProcessor';
+import { type ICsvProcessor } from '../../csvProcessor';
 import { HeadersProcessorState } from '../../states';
 import { type ICsvProcessorState } from '../../states';
 import { type ICsvWithHeadersVisitor } from '../../visitors';
-import { type IProcessorStrategy } from '../types';
+import { type ICsvProcessorStrategy } from '../types';
 
 class CsvWithHeadersStrategy
-  implements IProcessorStrategy<ICsvWithHeadersVisitor, ICsvProcessorState<ICsvWithHeadersVisitor>>
+  implements
+    ICsvProcessorStrategy<ICsvWithHeadersVisitor, ICsvProcessorState<ICsvWithHeadersVisitor>>
 {
   #logger: ILogger;
 
@@ -21,7 +22,7 @@ class CsvWithHeadersStrategy
   }
 
   buildInitialState(
-    processor: IProcessor<ICsvProcessorState<ICsvWithHeadersVisitor>>,
+    processor: ICsvProcessor<ICsvProcessorState<ICsvWithHeadersVisitor>>,
   ): ICsvProcessorState<ICsvWithHeadersVisitor> {
     return new HeadersProcessorState(this.#logger, processor);
   }

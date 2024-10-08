@@ -1,14 +1,13 @@
-import { type IProcessor } from '../csvProcessor';
+import { type ICsvProcessor } from '../csvProcessor';
 import { type ICsvProcessorState } from '../states';
 import { type ICsvWithHeadersVisitor } from '../visitors';
 
-// TODO: rename to include CSV
-interface IProcessorStrategy<
+interface ICsvProcessorStrategy<
   TVisitor extends ICsvWithHeadersVisitor,
   TState extends ICsvProcessorState<TVisitor>,
 > {
-  buildInitialState(processor: IProcessor<TState>): TState;
+  buildInitialState(processor: ICsvProcessor<TState>): TState;
   getVisitor(): TVisitor;
 }
 
-export type { IProcessorStrategy };
+export type { ICsvProcessorStrategy };

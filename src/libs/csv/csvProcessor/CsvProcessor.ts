@@ -7,17 +7,17 @@ import { type ILogger } from '@/logger';
 import { type IJsonSerializable } from '@/types';
 
 import { type ICsvProcessorState } from '../states';
-import { type IProcessorStrategy } from '../strategies';
+import { type ICsvProcessorStrategy } from '../strategies';
 import { type ICsvWithHeadersVisitor } from '../visitors';
 
-import { type IProcessor } from './types';
+import { type ICsvProcessor } from './types';
 
 class CsvProcessor<
     TVisitor extends ICsvWithHeadersVisitor,
     TState extends ICsvProcessorState<TVisitor>,
-    TStrategy extends IProcessorStrategy<TVisitor, TState>,
+    TStrategy extends ICsvProcessorStrategy<TVisitor, TState>,
   >
-  implements IProcessor<TState>, IJsonSerializable
+  implements ICsvProcessor<TState>, IJsonSerializable
 {
   #logger: ILogger;
 

@@ -1,2 +1,2 @@
 export { default } from './CsvProcessor';
-export type { IProcessor } from './types';
+export type { ICsvProcessor } from './types';
