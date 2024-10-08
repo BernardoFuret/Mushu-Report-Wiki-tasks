@@ -6,10 +6,11 @@ import { LoggerLabels } from '@/constants/logger';
 import { type ILogger } from '@/logger';
 import { type IJsonSerializable } from '@/types';
 
-import { type ICsvProcessorState } from '../../states';
-import { type ICsvProcessorStrategy } from '../../strategies';
-import { type ICsvWithHeadersVisitor } from '../../visitors';
-import { type ICsvProcessor } from '../types';
+import { type ICsvProcessorState } from '../states';
+import { type ICsvProcessorStrategy } from '../strategies';
+import { type ICsvWithHeadersVisitor } from '../visitors';
+
+import { type ICsvProcessor } from './types';
 
 class CsvStreamerProcessor<
     TVisitor extends ICsvWithHeadersVisitor,

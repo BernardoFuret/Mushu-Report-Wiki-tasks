@@ -2,10 +2,11 @@ import { LoggerLabels } from '@/constants/logger';
 import { type ILogger } from '@/logger';
 import { type IJsonSerializable } from '@/types';
 
-import { type ICsvProcessor } from '../../processors';
-import { type ICsvWithHeadersVisitor, type IVistorAcceptor } from '../../visitors';
-import RecordProcessorState from '../recordProcessorState';
-import { type ICsvProcessorState } from '../types';
+import { type ICsvProcessor } from '../processors';
+import { type ICsvWithHeadersVisitor, type IVistorAcceptor } from '../visitors';
+
+import RecordProcessorState from './RecordProcessorState';
+import { type ICsvProcessorState } from './types';
 
 class HeadersProcessorState
   implements ICsvProcessorState<ICsvWithHeadersVisitor>, IJsonSerializable
