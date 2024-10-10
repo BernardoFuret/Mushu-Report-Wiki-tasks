@@ -14,7 +14,7 @@ The following environment variables are available:
 boolean values (if empty or not set, it is converted to `false`; `true` otherwise).
 
 * `CSV_FILE_NAME`: Required variable. The name of the file (including the extension)
-placed in the `data` folder to be processed. Mandatory variable.
+placed in the `data` folder to be processed.
 
 ### Running the script
 TODO

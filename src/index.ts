@@ -16,7 +16,9 @@ const logger = Logger.create({ srcDirname, label: LoggerLabels.MAIN });
 
 const csvFilePath = getDataFilePath(srcDirname, config.csvFileName);
 
-const wikiClient = new WikiClient(logger, {
+const wikiApiUrl = 'https://wiki.mushureport.com/api.php'; // TODO: move somewhere else?
+
+const wikiClient = new WikiClient(logger, wikiApiUrl, {
   username: 'TODO',
   password: 'TODO',
 });
