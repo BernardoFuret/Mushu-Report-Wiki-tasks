@@ -1,6 +1,6 @@
 import { createReadStream } from 'node:fs';
 
-import { parse } from 'csv-parse';
+import { parse, type Parser } from 'csv-parse';
 
 import { LoggerLabels } from '@/constants/logger';
 import { type ILogger } from '@/logger';
@@ -45,15 +45,21 @@ class CsvStreamerProcessor<
     return this;
   }
 
-  async process(): Promise<void> {
-    this.#logger.info('Starting processing data');
-
-    const readable = createReadStream(this.#csvFilePath).pipe(parse());
-
+  async #iterateStream(readable: Parser) {
     // eslint-disable-next-line no-restricted-syntax
     for await (const record of readable) {
       await this.#state.consume(record).accept(this.#strategy.getVisitor());
     }
+  }
+
+  async process(): Promise<void> {
+    this.#logger.info('Starting processing data');
+
+    await new Promise((resolve, reject) => {
+      const stream = createReadStream(this.#csvFilePath).once('error', reject).pipe(parse());
+
+      this.#iterateStream(stream).then(resolve, reject);
+    });
   }
 
   toJSON(): unknown {
