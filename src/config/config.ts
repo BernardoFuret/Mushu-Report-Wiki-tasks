@@ -7,9 +7,15 @@ if (error) {
   throw new Error('Invalid env vars', { cause: error.issues });
 }
 
-const config: IConfig = Object.freeze({
-  csvFileName: data.CSV_FILE_NAME,
+const config: IConfig = {
   isDebug: data.DEBUG,
-});
+
+  csvFileName: data.CSV_FILE_NAME,
+
+  wiki: {
+    botUsername: data.WIKI_BOT_USERNAME,
+    botPassword: data.WIKI_BOT_PASSWORD,
+  },
+} as const;
 
 export default config;

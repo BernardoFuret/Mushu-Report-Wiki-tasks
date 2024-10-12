@@ -1,39 +1,86 @@
 import { LoggerLabels } from '@/constants/logger';
 import { type ILogger } from '@/logger';
+import Fetcher, { type IFetcher } from '@/services/fetcher';
 import { type IJsonSerializable } from '@/types';
 
-import { type IBotCredentials, type IRevisionsApiResponse, type IWikiClient } from './types';
+import { checkIsAssertError } from './helpers';
+import {
+  type IAssertApiResponse,
+  type IBotCredentials,
+  type ILoginActionApiResponse,
+  type IQueryMetaTokensApiResponse,
+  type IQueryRevisionsApiResponse,
+  type IWikiClient,
+} from './types';
 
 // TODO: Decorators to add sleep?
+
+// TODO: set headers with user agent
+
+// TODO: receive bot rednetials on instantiation and have a retry in case the login fails
+//  (decorator to assert if it's logged in and login if it isn't?)
 
 class WikiClient implements IWikiClient, IJsonSerializable {
   #logger: ILogger;
 
   #wikiApiUrl: string;
 
-  #botCredentials: IBotCredentials;
+  #fetcher: IFetcher;
 
-  constructor(logger: ILogger, wikiApiUrl: string, botCredentials: IBotCredentials) {
+  constructor(logger: ILogger, wikiApiUrl: string) {
     this.#logger = logger.fork(LoggerLabels.WIKI_CLIENT);
 
     this.#wikiApiUrl = wikiApiUrl;
 
-    this.#botCredentials = botCredentials;
+    this.#fetcher = new Fetcher(logger, wikiApiUrl);
   }
 
-  async #fetch<T = unknown>(urlSearchParams: URLSearchParams): Promise<T> {
-    const url = `${this.#wikiApiUrl}?${urlSearchParams}`;
+  async #getLoginToken() {
+    this.#logger.info('Getting login token');
 
-    this.#logger.debug('Fetching', {
-      wikiApiUrl: this.#wikiApiUrl,
-      urlSearchParams,
-      urlSearchParamsString: urlSearchParams.toString(),
-      url,
+    const urlSearchParams = new URLSearchParams({
+      action: 'query',
+      meta: 'tokens',
+      type: 'login',
+      formatversion: '2',
+      format: 'json',
     });
 
-    const response = await fetch(url);
+    const {
+      query: {
+        tokens: { logintoken },
+      },
+    } = await this.#fetcher.get<IQueryMetaTokensApiResponse>({ query: urlSearchParams });
 
-    return response.json();
+    return logintoken;
+  }
+
+  async login(botCredentials: IBotCredentials): Promise<void> {
+    this.#logger.info('Logging in as', botCredentials.username);
+
+    const loginToken = await this.#getLoginToken();
+
+    const urlSearchParams = new URLSearchParams({
+      action: 'login',
+      format: 'json',
+    });
+
+    const body = new URLSearchParams({
+      lgname: botCredentials.username,
+      lgpassword: botCredentials.password,
+      lgtoken: loginToken,
+    });
+
+    const loginResponse = await this.#fetcher.post<ILoginActionApiResponse>({
+      query: urlSearchParams,
+      body,
+    });
+
+    if (loginResponse.login?.result !== 'Success') {
+      throw new Error('Unsuccessful login attempt', { cause: { loginResponse } });
+    }
+
+    this.#logger.info('Successful login as', botCredentials.username);
   }
 
   async editPage(pagename: string, newContent: string): Promise<void> {
@@ -51,11 +98,27 @@ class WikiClient implements IWikiClient, IJsonSerializable {
       rvprop: 'content',
       rvslots: '*',
       titles: pagename,
+      assert: 'user',
       formatversion: '2',
       format: 'json',
     });
 
-    const apiResult = await this.#fetch<IRevisionsApiResponse>(urlSearchParams);
+    const apiResult = await this.#fetcher.get<IQueryRevisionsApiResponse | IAssertApiResponse>({
+      query: urlSearchParams,
+    });
+
+    const isAssertError = checkIsAssertError(apiResult);
+
+    if (isAssertError) {
+      throw new Error('A registered account must be used', {
+        cause: {
+          pagename,
+          apiResult,
+          urlSearchParams,
+          urlSearchParamsString: urlSearchParams.toString(),
+        },
+      });
+    }
 
     const content = apiResult?.query?.pages[0]?.revisions?.[0]?.slots.main.content;
 
@@ -78,7 +141,6 @@ class WikiClient implements IWikiClient, IJsonSerializable {
       class: this.constructor.name,
       data: {
         wikiApiUrl: this.#wikiApiUrl,
-        username: this.#botCredentials.username,
       },
     };
   }

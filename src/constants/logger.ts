@@ -1,6 +1,7 @@
 enum LoggerLabels {
   MAIN = 'MAIN',
 
+  FETCHER = 'FETCHER',
   WIKI_CLIENT = 'WIKI_CLIENT',
 
   CSV_PROCESSOR = 'CSV_PROCESSOR',

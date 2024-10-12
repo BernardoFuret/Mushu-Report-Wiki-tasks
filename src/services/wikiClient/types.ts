@@ -4,11 +4,29 @@ interface IBotCredentials {
 }
 
 interface IWikiClient {
+  login(botCredentials: IBotCredentials): Promise<void>;
   getPageContent(pagename: string): Promise<string>;
   editPage(pagename: string, newContent: string, options?: unknown): Promise<void>;
 }
 
-interface IRevisionsApiResponse {
+interface IAssertApiResponse {
+  error: {
+    code: string;
+  };
+}
+
+interface ILoginActionApiResponse {
+  login?: { result?: string };
+}
+
+interface IQueryMetaTokensApiResponse {
+  batchcomplete: boolean;
+  query: {
+    tokens: { logintoken: string };
+  };
+}
+
+interface IQueryRevisionsApiResponse {
   batchcomplete: boolean;
   query?: {
     pages: {
@@ -18,4 +36,11 @@ interface IRevisionsApiResponse {
   };
 }
 
-export type { IBotCredentials, IRevisionsApiResponse, IWikiClient };
+export type {
+  IAssertApiResponse,
+  IBotCredentials,
+  ILoginActionApiResponse,
+  IQueryMetaTokensApiResponse,
+  IQueryRevisionsApiResponse,
+  IWikiClient,
+};
