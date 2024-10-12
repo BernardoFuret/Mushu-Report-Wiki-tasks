@@ -1,7 +1,6 @@
-import { CookieJar } from 'tough-cookie';
-
 import { LoggerLabels } from '@/constants/logger';
 import { type ILogger } from '@/logger';
+import Fetcher, { type IFetcher } from '@/services/fetcher';
 import { type IJsonSerializable } from '@/types';
 
 import {
@@ -16,44 +15,23 @@ import {
 
 // TODO: set headers with user agent
 
+// TODO: receive bot rednetials on instantiation and have a retry in case the login fails
+//  (decorator to assert if it's logged in and login if it isn't?)
+// TODO: use assert https://www.mediawiki.org/wiki/API:Assert
+
 class WikiClient implements IWikiClient, IJsonSerializable {
   #logger: ILogger;
 
   #wikiApiUrl: string;
 
-  #cookieJar: CookieJar;
+  #fetcher: IFetcher;
 
   constructor(logger: ILogger, wikiApiUrl: string) {
     this.#logger = logger.fork(LoggerLabels.WIKI_CLIENT);
 
     this.#wikiApiUrl = wikiApiUrl;
 
-    this.#cookieJar = new CookieJar();
-  }
-
-  async #fetch<T = unknown>(
-    urlSearchParams: URLSearchParams,
-    fetchOptions?: RequestInit,
-  ): Promise<T> {
-    const url = `${this.#wikiApiUrl}?${urlSearchParams}`;
-
-    this.#logger.debug('Fetching', {
-      method: fetchOptions?.method,
-      wikiApiUrl: this.#wikiApiUrl,
-      urlSearchParams,
-      urlSearchParamsString: urlSearchParams.toString(),
-      url,
-    });
-
-    const response = await fetch(url, fetchOptions);
-
-    const cookies = response.headers.getSetCookie();
-
-    await cookies.reduce<Promise<unknown>>((chain, cookieString) => {
-      return chain.then(() => this.#cookieJar.setCookie(cookieString, this.#wikiApiUrl));
-    }, Promise.resolve());
-
-    return response.json();
+    this.#fetcher = new Fetcher(logger, wikiApiUrl);
   }
 
   async #getLoginToken() {
@@ -71,7 +49,7 @@ class WikiClient implements IWikiClient, IJsonSerializable {
       query: {
         tokens: { logintoken },
       },
-    } = await this.#fetch<IQueryMetaTokensApiResponse>(urlSearchParams);
+    } = await this.#fetcher.get<IQueryMetaTokensApiResponse>({ query: urlSearchParams });
 
     return logintoken;
   }
@@ -86,21 +64,14 @@ class WikiClient implements IWikiClient, IJsonSerializable {
       format: 'json',
     });
 
-    const cookies = await this.#cookieJar.getCookies(this.#wikiApiUrl);
-
-    const headers = {
-      Cookie: cookies.map((cookie) => cookie.cookieString()).join(';'),
-    };
-
     const body = new URLSearchParams({
       lgname: botCredentials.username,
       lgpassword: botCredentials.password,
       lgtoken: loginToken,
     });
 
-    const loginResponse = await this.#fetch<ILoginActionApiResponse>(urlSearchParams, {
-      method: 'POST',
-      headers,
+    const loginResponse = await this.#fetcher.post<ILoginActionApiResponse>({
+      query: urlSearchParams,
       body,
     });
 
@@ -108,7 +79,10 @@ class WikiClient implements IWikiClient, IJsonSerializable {
       throw new Error('Unsuccessful login attempt', { cause: { loginResponse } });
     }
 
-    throw new Error();
+    // eslint-disable-next-line no-console
+    console.log('>>>success', loginResponse); // TODO
+
+    throw new Error(); // TODO
   }
 
   async editPage(pagename: string, newContent: string): Promise<void> {
@@ -130,7 +104,9 @@ class WikiClient implements IWikiClient, IJsonSerializable {
       format: 'json',
     });
 
-    const apiResult = await this.#fetch<IQueryRevisionsApiResponse>(urlSearchParams);
+    const apiResult = await this.#fetcher.get<IQueryRevisionsApiResponse>({
+      query: urlSearchParams,
+    });
 
     const content = apiResult?.query?.pages[0]?.revisions?.[0]?.slots.main.content;
 
