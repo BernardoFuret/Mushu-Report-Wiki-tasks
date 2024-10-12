@@ -8,7 +8,18 @@ interface IWikiClient {
   editPage(pagename: string, newContent: string, options?: unknown): Promise<void>;
 }
 
-interface IRevisionsApiResponse {
+interface ILoginActionApiResponse {
+  login?: { result?: string };
+}
+
+interface IQueryMetaTokensApiResponse {
+  batchcomplete: boolean;
+  query: {
+    tokens: { logintoken: string };
+  };
+}
+
+interface IQueryRevisionsApiResponse {
   batchcomplete: boolean;
   query?: {
     pages: {
@@ -18,4 +29,10 @@ interface IRevisionsApiResponse {
   };
 }
 
-export type { IBotCredentials, IRevisionsApiResponse, IWikiClient };
+export type {
+  IBotCredentials,
+  ILoginActionApiResponse,
+  IQueryMetaTokensApiResponse,
+  IQueryRevisionsApiResponse,
+  IWikiClient,
+};
