@@ -18,9 +18,11 @@ const csvFilePath = getDataFilePath(srcDirname, config.csvFileName);
 
 const wikiApiUrl = 'https://wiki.mushureport.com/api.php'; // TODO: move somewhere else?
 
-const wikiClient = new WikiClient(logger, wikiApiUrl, {
-  username: 'TODO',
-  password: 'TODO',
+const wikiClient = new WikiClient(logger, wikiApiUrl);
+
+await wikiClient.login({
+  username: config.wiki.botUsername,
+  password: config.wiki.botPassword,
 });
 
 const cardTemplateVisitor = new CardTemplateVisitor(logger, wikiClient);

@@ -5,6 +5,8 @@ import path from 'node:path';
 import zod from 'zod';
 
 const schema = zod.object({
+  DEBUG: zod.coerce.boolean(),
+
   CSV_FILE_NAME: zod
     .string()
     .transform((val) => path.basename(val))
@@ -13,7 +15,9 @@ const schema = zod.object({
         message: 'No valid CSV file name found. A CSV file name is required and must match /\\w/',
       }),
     ),
-  DEBUG: zod.coerce.boolean(),
+
+  WIKI_BOT_USERNAME: zod.string().trim().min(1),
+  WIKI_BOT_PASSWORD: zod.string().trim().min(1),
 });
 
 export default schema;
