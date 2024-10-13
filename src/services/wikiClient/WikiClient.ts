@@ -83,12 +83,6 @@ class WikiClient implements IWikiClient, IJsonSerializable {
     this.#logger.info('Successful login as', botCredentials.username);
   }
 
-  async editPage(pagename: string, newContent: string): Promise<void> {
-    this.#logger.info('Editing page', pagename);
-
-    this.#logger.debug('With content', newContent);
-  }
-
   async getPageContent(pagename: string): Promise<string> {
     this.#logger.info('Getting page content for', pagename);
 
@@ -134,6 +128,31 @@ class WikiClient implements IWikiClient, IJsonSerializable {
     }
 
     return content;
+  }
+
+  async editPage(pagename: string, newContent: string): Promise<void> {
+    this.#logger.info('Editing page', pagename);
+
+    this.#logger.debug('With new content', newContent);
+
+    const urlSearchParams = new URLSearchParams({
+      action: 'edit',
+      title: pagename,
+      text: newContent,
+      nocreate: 'true',
+      bot: 'true',
+      token: 'TODO', // TODO: fetch edit token
+      assert: 'user',
+      formatversion: '2',
+      format: 'json',
+    });
+
+    const editResponse = await this.#fetcher.post({
+      body: urlSearchParams,
+    });
+
+    // eslint-disable-next-line no-console
+    console.log('>>>edit response', editResponse);
   }
 
   toJSON(): unknown {
