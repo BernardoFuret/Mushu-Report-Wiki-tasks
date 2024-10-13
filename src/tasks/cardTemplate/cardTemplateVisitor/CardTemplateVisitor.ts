@@ -33,7 +33,7 @@ class CardTemplateVisitor implements ICsvWithHeadersVisitor {
 
     const pageContent = await this.#wikiClient.getPageContent(parsedRecord.pagename);
 
-    const updatedPageContent = processPageContent(pageContent, parsedRecord.content);
+    const updatedPageContent = processPageContent(pageContent, parsedRecord.updates);
 
     this.#logger.debug('Transformed page content', {
       pageContent,

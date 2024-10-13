@@ -11,8 +11,6 @@ const isValidHeadersRecord = (record: string[]): boolean => {
   return !!recordRest.length && !recordRest.some((recordPart) => !recordPart.trim());
 };
 
-/// ////
-
 const isValidDataRecord = (record: string[]): record is [string, ...string[]] => {
   return !!record?.[0]?.trim();
 };
@@ -24,7 +22,7 @@ const parseRecord = (record: [string, ...string[]], headers: string[]): IParsedR
 
   return {
     pagename,
-    content: headersRest.reduce((acc, header, index) => {
+    updates: headersRest.reduce((acc, header, index) => {
       const contentValue = recordRest[index];
 
       return contentValue ? { ...acc, [header]: contentValue } : acc;
