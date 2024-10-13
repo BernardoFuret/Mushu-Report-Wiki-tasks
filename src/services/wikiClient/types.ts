@@ -8,6 +8,12 @@ interface IWikiClient {
   editPage(pagename: string, newContent: string, options?: unknown): Promise<void>;
 }
 
+interface IAssertApiResponse {
+  error: {
+    code: string;
+  };
+}
+
 interface ILoginActionApiResponse {
   login?: { result?: string };
 }
@@ -30,6 +36,7 @@ interface IQueryRevisionsApiResponse {
 }
 
 export type {
+  IAssertApiResponse,
   IBotCredentials,
   ILoginActionApiResponse,
   IQueryMetaTokensApiResponse,

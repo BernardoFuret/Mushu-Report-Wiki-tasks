@@ -3,7 +3,9 @@ import { type ILogger } from '@/logger';
 import Fetcher, { type IFetcher } from '@/services/fetcher';
 import { type IJsonSerializable } from '@/types';
 
+import { checkIsAssertError } from './helpers';
 import {
+  type IAssertApiResponse,
   type IBotCredentials,
   type ILoginActionApiResponse,
   type IQueryMetaTokensApiResponse,
@@ -17,7 +19,6 @@ import {
 
 // TODO: receive bot rednetials on instantiation and have a retry in case the login fails
 //  (decorator to assert if it's logged in and login if it isn't?)
-// TODO: use assert https://www.mediawiki.org/wiki/API:Assert
 
 class WikiClient implements IWikiClient, IJsonSerializable {
   #logger: ILogger;
@@ -79,10 +80,7 @@ class WikiClient implements IWikiClient, IJsonSerializable {
       throw new Error('Unsuccessful login attempt', { cause: { loginResponse } });
     }
 
-    // eslint-disable-next-line no-console
-    console.log('>>>success', loginResponse); // TODO
-
-    throw new Error(); // TODO
+    this.#logger.info('Successful login as', botCredentials.username);
   }
 
   async editPage(pagename: string, newContent: string): Promise<void> {
@@ -100,13 +98,27 @@ class WikiClient implements IWikiClient, IJsonSerializable {
       rvprop: 'content',
       rvslots: '*',
       titles: pagename,
+      assert: 'user',
       formatversion: '2',
       format: 'json',
     });
 
-    const apiResult = await this.#fetcher.get<IQueryRevisionsApiResponse>({
+    const apiResult = await this.#fetcher.get<IQueryRevisionsApiResponse | IAssertApiResponse>({
       query: urlSearchParams,
     });
+
+    const isAssertError = checkIsAssertError(apiResult);
+
+    if (isAssertError) {
+      throw new Error('A registered account must be used', {
+        cause: {
+          pagename,
+          apiResult,
+          urlSearchParams,
+          urlSearchParamsString: urlSearchParams.toString(),
+        },
+      });
+    }
 
     const content = apiResult?.query?.pages[0]?.revisions?.[0]?.slots.main.content;
 
