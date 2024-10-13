@@ -1,9 +1,9 @@
-import { type IAssertApiResponse } from './types';
+import { type IApiErrorResponse } from './types';
 
-const checkIsAssertError = <T extends NonNullable<unknown>>(
-  apiResult: T | IAssertApiResponse,
-): apiResult is IAssertApiResponse => {
+const checkIsApiError = <T extends NonNullable<unknown>>(
+  apiResult: T | IApiErrorResponse,
+): apiResult is IApiErrorResponse => {
   return 'error' in apiResult && !!apiResult.error?.code;
 };
 
-export { checkIsAssertError };
+export { checkIsApiError };
