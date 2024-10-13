@@ -18,11 +18,9 @@ class CardTemplateVisitor implements ICsvWithHeadersVisitor {
   }
 
   async visitHeadersRecord(record: string[]): Promise<void> {
-    this.#logger.info('Handling record', record);
+    this.#logger.info('Handling headers record', record);
 
     if (!isValidHeadersRecord(record)) {
-      this.#logger.debug('Record', record, 'is not a valid headers record');
-
       throw new Error(
         'Invalid headers. Expected headers record to have at least one template parameter header',
         { cause: { record } },
@@ -43,17 +41,13 @@ class CardTemplateVisitor implements ICsvWithHeadersVisitor {
   }
 
   async visitDataRecord(record: string[], headersRecord: string[]): Promise<void> {
-    this.#logger.info('Handling record', record);
+    this.#logger.info('Handling data record', record);
 
     if (isValidDataRecord(record)) {
-      this.#logger.debug('Data record', record, 'is a valid record');
-
       await this.#handleValidDataRecord(record, headersRecord).catch((error) => {
         this.#logger.error('Error handling data record', record, error);
       });
     } else {
-      this.#logger.debug('Record', record, 'is not a valid data record');
-
       this.#logger.error('Missing pagename on data record', record);
     }
   }

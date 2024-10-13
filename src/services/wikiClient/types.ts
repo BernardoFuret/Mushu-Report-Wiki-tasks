@@ -8,4 +8,14 @@ interface IWikiClient {
   editPage(pagename: string, newContent: string, options?: unknown): Promise<void>;
 }
 
-export type { IBotCredentials, IWikiClient };
+interface IRevisionsApiResponse {
+  batchcomplete: boolean;
+  query?: {
+    pages: {
+      title: string;
+      revisions?: { slots: { main: { content: string } } }[];
+    }[];
+  };
+}
+
+export type { IBotCredentials, IRevisionsApiResponse, IWikiClient };
