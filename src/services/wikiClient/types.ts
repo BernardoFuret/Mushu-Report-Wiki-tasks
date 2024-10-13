@@ -4,6 +4,7 @@ interface IBotCredentials {
 }
 
 interface IWikiClient {
+  login(botCredentials: IBotCredentials): Promise<void>;
   getPageContent(pagename: string): Promise<string>;
   editPage(pagename: string, newContent: string, options?: unknown): Promise<void>;
 }
