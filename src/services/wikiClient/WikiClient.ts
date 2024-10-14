@@ -15,11 +15,6 @@ import {
   type IWikiClient,
 } from './types';
 
-// TODO: set headers with user agent
-
-// TODO: receive bot rednetials on instantiation and have a retry in case the login fails
-//  (decorator to assert if it's logged in and login if it isn't?)
-
 class WikiClient implements IWikiClient, IJsonSerializable {
   #logger: ILogger;
 
@@ -29,12 +24,16 @@ class WikiClient implements IWikiClient, IJsonSerializable {
 
   #editToken: string | null = null;
 
-  constructor(logger: ILogger, wikiApiUrl: string) {
+  constructor(logger: ILogger, wikiApiUrl: string, userAgent: string) {
     this.#logger = logger.fork(LoggerLabels.WIKI_CLIENT);
 
     this.#wikiApiUrl = wikiApiUrl;
 
-    this.#fetcher = new Fetcher(logger, wikiApiUrl);
+    this.#fetcher = new Fetcher(logger, wikiApiUrl, {
+      headers: {
+        'User-Agent': userAgent,
+      },
+    });
   }
 
   async #getLoginToken() {

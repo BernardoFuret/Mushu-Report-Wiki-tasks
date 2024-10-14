@@ -1,6 +1,6 @@
 {
   "name": "card-updater",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "",
   "main": "index.ts",
   "type": "module",
@@ -11,9 +11,9 @@
     "lint:code": "eslint . --report-unused-disable-directives --max-warnings 0",
     "lint:code:fix": "eslint . --fix",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "clean:build": "rm -rf ./dist",
     "clean:deps": "rm -rf ./node_modules",
     "clean:logs": "rm -rf ./logs",
+    "todo": "git grep --line-number TODO -- \":!*.md\" \":!*.json\"",
     "prepare": "husky"
   },
   "keywords": [],

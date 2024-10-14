@@ -3,19 +3,29 @@ import { CookieJar } from 'tough-cookie';
 import { LoggerLabels } from '@/constants/logger';
 import { type ILogger } from '@/logger';
 
-import { type IFetcher, type IGetRquestParameters, type IPostRquestParameters } from './types';
+import {
+  type IFetcher,
+  type IFetcherOptions,
+  type IFetchOptions,
+  type IGetRquestParameters,
+  type IPostRquestParameters,
+} from './types';
 
 class Fetcher implements IFetcher {
   #logger: ILogger;
 
   #baseUrl: string;
 
+  #options: IFetcherOptions;
+
   #cookieJar: CookieJar;
 
-  constructor(logger: ILogger, baseUrl: string) {
+  constructor(logger: ILogger, baseUrl: string, options: IFetcherOptions = {}) {
     this.#logger = logger.fork(LoggerLabels.FETCHER);
 
     this.#baseUrl = baseUrl;
+
+    this.#options = options;
 
     this.#cookieJar = new CookieJar();
   }
@@ -38,10 +48,17 @@ class Fetcher implements IFetcher {
     };
   }
 
-  async #fetch<T>(url: URL, fetchOptions: RequestInit): Promise<T> {
-    // TODO: baseHeaders here
+  async #fetch<T>(url: URL, fetchOptions: IFetchOptions): Promise<T> {
+    const baseHeaders = await this.#prepareHeaders();
 
-    const response = await fetch(url, fetchOptions);
+    const response = await fetch(url, {
+      ...fetchOptions,
+      headers: {
+        ...this.#options.headers,
+        ...baseHeaders,
+        ...fetchOptions.headers,
+      },
+    });
 
     const cookies = response.headers.getSetCookie();
 
@@ -58,14 +75,9 @@ class Fetcher implements IFetcher {
 
     this.#logger.debug('GET', url.toString());
 
-    const baseHeaders = await this.#prepareHeaders();
-
     const jsonData = await this.#fetch<T>(url, {
       method: 'GET',
-      headers: {
-        ...baseHeaders,
-        ...headers,
-      },
+      headers,
     });
 
     return jsonData;
@@ -76,14 +88,9 @@ class Fetcher implements IFetcher {
 
     this.#logger.debug('POST', url.toString());
 
-    const baseHeaders = await this.#prepareHeaders();
-
     const jsonData = await this.#fetch<T>(url, {
       method: 'POST',
-      headers: {
-        ...baseHeaders,
-        ...headers,
-      },
+      headers,
       body,
     });
 

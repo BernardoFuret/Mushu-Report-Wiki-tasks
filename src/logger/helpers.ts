@@ -36,7 +36,7 @@ const createBaseLogger = ({ srcDirname }: IBaseLoggerOptions): IBaseLogger => {
         format: consoleFormat,
       }),
       new winston.transports.File({
-        level: 'info', // TODO: Enable debug?
+        level: 'info',
         filename: generateLogPath(srcDirname, 'combined.log'),
         format: fileFormat,
         options: fileTransportsOptions,
