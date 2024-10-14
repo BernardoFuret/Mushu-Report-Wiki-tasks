@@ -1,0 +1,33 @@
+#!/usr/bin/env sh
+
+has_files_to_stash=$(git status --porcelain -uall 2>/dev/null)
+
+has_stashed=false
+
+pop_stash () {
+  echo ""
+
+  if [ "$has_stashed" = true ]; then
+    echo "Restoring workspace state from stash."
+
+    git stash pop --index --quiet
+  else
+    echo "Nothing was previously stashed."
+  fi
+}
+
+trap pop_stash EXIT
+
+echo ""
+
+if [ -z "$has_files_to_stash" ]; then
+  echo "Workspace is clean."
+else
+  echo "Workspace is dirty. Stashing."
+
+  git stash -u --message "Automatic stash for pre-push hook."
+
+  has_stashed=true
+fi
+
+npm run lint
