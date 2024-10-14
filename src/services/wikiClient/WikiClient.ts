@@ -1,4 +1,5 @@
 import { LoggerLabels } from '@/constants/logger';
+import { sleepAfter } from '@/decorators/methods';
 import { type ILogger } from '@/logger';
 import Fetcher, { type IFetcher } from '@/services/fetcher';
 import { type IJsonSerializable } from '@/types';
@@ -13,8 +14,6 @@ import {
   type IQueryRevisionsApiResponse,
   type IWikiClient,
 } from './types';
-
-// TODO: Decorators to add sleep?
 
 // TODO: set headers with user agent
 
@@ -88,6 +87,8 @@ class WikiClient implements IWikiClient, IJsonSerializable {
     this.#logger.info('Successful login as', botCredentials.username);
   }
 
+  @sleepAfter(500)
+  // @after<WikiClient, [string]>((self) => self.#logger.info('test'))
   async getPageContent(pagename: string): Promise<string> {
     this.#logger.info('Getting page content for', pagename);
 
@@ -136,7 +137,6 @@ class WikiClient implements IWikiClient, IJsonSerializable {
   }
 
   async #getEditToken(): Promise<string> {
-    // TODO
     this.#logger.info('Getting edit token');
 
     const urlSearchParams = new URLSearchParams({
@@ -158,6 +158,7 @@ class WikiClient implements IWikiClient, IJsonSerializable {
     return csrftoken;
   }
 
+  @sleepAfter(500)
   async editPage(pagename: string, newContent: string): Promise<void> {
     this.#logger.info('Editing page', pagename);
 
