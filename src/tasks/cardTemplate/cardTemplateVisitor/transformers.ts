@@ -13,10 +13,12 @@ const replaceCardTemplateParameters = (
 ) => {
   const parametersNames = Object.keys(parameters);
 
-  return cardTemplateContent.replace(
-    new RegExp(`(?<=^[ \\t]*\\|[ \\t]*(${parametersNames.join('|')})[ \\t]*=)(.*?)$`, 'gmi'),
-    (_match, parameterName: string) => parameters[parameterName] || '',
-  );
+  return parametersNames.length
+    ? cardTemplateContent.replace(
+        new RegExp(`(?<=^[ \\t]*\\|[ \\t]*(${parametersNames.join('|')})[ \\t]*=)(.*?)$`, 'gmi'),
+        (match, parameterName: string) => parameters[parameterName] || match,
+      )
+    : cardTemplateContent;
 };
 
 const insertCardTemplateParameters = (

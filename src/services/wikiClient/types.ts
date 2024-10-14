@@ -9,9 +9,10 @@ interface IWikiClient {
   editPage(pagename: string, newContent: string, options?: unknown): Promise<void>;
 }
 
-interface IAssertApiResponse {
+interface IApiErrorResponse {
   error: {
     code: string;
+    info: string;
   };
 }
 
@@ -19,10 +20,19 @@ interface ILoginActionApiResponse {
   login?: { result?: string };
 }
 
-interface IQueryMetaTokensApiResponse {
+type TTokenTypes =
+  | 'createaccounttoken'
+  | 'csrftoken'
+  | 'logintoken'
+  | 'patroltoken'
+  | 'rollbacktoken'
+  | 'userrightstoken'
+  | 'watchtoken';
+
+interface IQueryMetaTokensApiResponse<T extends TTokenTypes> {
   batchcomplete: boolean;
   query: {
-    tokens: { logintoken: string };
+    tokens: { [K in T]: string };
   };
 }
 
@@ -36,9 +46,17 @@ interface IQueryRevisionsApiResponse {
   };
 }
 
+interface IEditApiResponse {
+  edit: {
+    result: 'Success';
+    newrevid: number;
+  };
+}
+
 export type {
-  IAssertApiResponse,
+  IApiErrorResponse,
   IBotCredentials,
+  IEditApiResponse,
   ILoginActionApiResponse,
   IQueryMetaTokensApiResponse,
   IQueryRevisionsApiResponse,
