@@ -3,19 +3,28 @@ import { CookieJar } from 'tough-cookie';
 import { LoggerLabels } from '@/constants/logger';
 import { type ILogger } from '@/logger';
 
-import { type IFetcher, type IGetRquestParameters, type IPostRquestParameters } from './types';
+import {
+  type IFetcher,
+  type IFetcherOptions,
+  type IGetRquestParameters,
+  type IPostRquestParameters,
+} from './types';
 
 class Fetcher implements IFetcher {
   #logger: ILogger;
 
   #baseUrl: string;
 
+  #options: IFetcherOptions;
+
   #cookieJar: CookieJar;
 
-  constructor(logger: ILogger, baseUrl: string) {
+  constructor(logger: ILogger, baseUrl: string, options: IFetcherOptions = {}) {
     this.#logger = logger.fork(LoggerLabels.FETCHER);
 
     this.#baseUrl = baseUrl;
+
+    this.#options = options;
 
     this.#cookieJar = new CookieJar();
   }
@@ -63,6 +72,7 @@ class Fetcher implements IFetcher {
     const jsonData = await this.#fetch<T>(url, {
       method: 'GET',
       headers: {
+        ...this.#options.headers,
         ...baseHeaders,
         ...headers,
       },
@@ -81,6 +91,7 @@ class Fetcher implements IFetcher {
     const jsonData = await this.#fetch<T>(url, {
       method: 'POST',
       headers: {
+        ...this.#options.headers,
         ...baseHeaders,
         ...headers,
       },
