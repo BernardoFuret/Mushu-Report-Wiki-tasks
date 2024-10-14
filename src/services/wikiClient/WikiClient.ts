@@ -88,7 +88,6 @@ class WikiClient implements IWikiClient, IJsonSerializable {
   }
 
   @sleepAfter(500)
-  // @after<WikiClient, [string]>((self) => self.#logger.info('test'))
   async getPageContent(pagename: string): Promise<string> {
     this.#logger.info('Getting page content for', pagename);
 
