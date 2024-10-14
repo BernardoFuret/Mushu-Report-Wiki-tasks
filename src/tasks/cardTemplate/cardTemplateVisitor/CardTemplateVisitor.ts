@@ -33,10 +33,21 @@ class CardTemplateVisitor implements ICsvWithHeadersVisitor {
 
     const pageContent = await this.#wikiClient.getPageContent(parsedRecord.pagename);
 
-    const updatedPageContent = processPageContent(pageContent, parsedRecord.content);
+    const updatedPageContent = processPageContent(pageContent, parsedRecord.updates);
+
+    this.#logger.debug('Transformed page content', {
+      pageContent,
+      updatedPageContent,
+    });
 
     if (updatedPageContent !== pageContent) {
       await this.#wikiClient.editPage(parsedRecord.pagename, updatedPageContent);
+    } else {
+      this.#logger.warn(
+        'No changes detected between the current content and updated content.',
+        'Skipping',
+        parsedRecord,
+      );
     }
   }
 
@@ -45,7 +56,7 @@ class CardTemplateVisitor implements ICsvWithHeadersVisitor {
 
     if (isValidDataRecord(record)) {
       await this.#handleValidDataRecord(record, headersRecord).catch((error) => {
-        this.#logger.error('Error handling data record', record, error);
+        this.#logger.error(error);
       });
     } else {
       this.#logger.error('Missing pagename on data record', record);

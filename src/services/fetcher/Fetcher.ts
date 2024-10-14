@@ -39,11 +39,6 @@ class Fetcher implements IFetcher {
   }
 
   async #fetch<T>(url: URL, fetchOptions: RequestInit): Promise<T> {
-    this.#logger.debug('Fetching', {
-      method: fetchOptions.method,
-      url: url.toString(),
-    });
-
     // TODO: baseHeaders here
 
     const response = await fetch(url, fetchOptions);
@@ -61,7 +56,7 @@ class Fetcher implements IFetcher {
   async get<T>({ path = '', query, headers = {} }: IGetRquestParameters): Promise<T> {
     const url = this.#buildUrl(path, query);
 
-    this.#logger.info('GET', url.toString());
+    this.#logger.debug('GET', url.toString());
 
     const baseHeaders = await this.#prepareHeaders();
 
@@ -79,7 +74,7 @@ class Fetcher implements IFetcher {
   async post<T>({ path = '', query, headers = {}, body }: IPostRquestParameters): Promise<T> {
     const url = this.#buildUrl(path, query);
 
-    this.#logger.info('POST', url.toString());
+    this.#logger.debug('POST', url.toString());
 
     const baseHeaders = await this.#prepareHeaders();
 

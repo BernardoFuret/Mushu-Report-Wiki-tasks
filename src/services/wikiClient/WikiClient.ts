@@ -1,19 +1,19 @@
 import { LoggerLabels } from '@/constants/logger';
+import { sleepAfter } from '@/decorators/methods';
 import { type ILogger } from '@/logger';
 import Fetcher, { type IFetcher } from '@/services/fetcher';
 import { type IJsonSerializable } from '@/types';
 
-import { checkIsAssertError } from './helpers';
+import { checkIsApiError } from './helpers';
 import {
-  type IAssertApiResponse,
+  type IApiErrorResponse,
   type IBotCredentials,
+  type IEditApiResponse,
   type ILoginActionApiResponse,
   type IQueryMetaTokensApiResponse,
   type IQueryRevisionsApiResponse,
   type IWikiClient,
 } from './types';
-
-// TODO: Decorators to add sleep?
 
 // TODO: set headers with user agent
 
@@ -26,6 +26,8 @@ class WikiClient implements IWikiClient, IJsonSerializable {
   #wikiApiUrl: string;
 
   #fetcher: IFetcher;
+
+  #editToken: string | null = null;
 
   constructor(logger: ILogger, wikiApiUrl: string) {
     this.#logger = logger.fork(LoggerLabels.WIKI_CLIENT);
@@ -50,7 +52,9 @@ class WikiClient implements IWikiClient, IJsonSerializable {
       query: {
         tokens: { logintoken },
       },
-    } = await this.#fetcher.get<IQueryMetaTokensApiResponse>({ query: urlSearchParams });
+    } = await this.#fetcher.get<IQueryMetaTokensApiResponse<'logintoken'>>({
+      query: urlSearchParams,
+    });
 
     return logintoken;
   }
@@ -83,12 +87,7 @@ class WikiClient implements IWikiClient, IJsonSerializable {
     this.#logger.info('Successful login as', botCredentials.username);
   }
 
-  async editPage(pagename: string, newContent: string): Promise<void> {
-    this.#logger.info('Editing page', pagename);
-
-    this.#logger.debug('With content', newContent);
-  }
-
+  @sleepAfter(500)
   async getPageContent(pagename: string): Promise<string> {
     this.#logger.info('Getting page content for', pagename);
 
@@ -103,14 +102,14 @@ class WikiClient implements IWikiClient, IJsonSerializable {
       format: 'json',
     });
 
-    const apiResult = await this.#fetcher.get<IQueryRevisionsApiResponse | IAssertApiResponse>({
+    const apiResult = await this.#fetcher.get<IQueryRevisionsApiResponse | IApiErrorResponse>({
       query: urlSearchParams,
     });
 
-    const isAssertError = checkIsAssertError(apiResult);
+    const isApiError = checkIsApiError(apiResult);
 
-    if (isAssertError) {
-      throw new Error('A registered account must be used', {
+    if (isApiError) {
+      throw new Error('Received an error from the API', {
         cause: {
           pagename,
           apiResult,
@@ -134,6 +133,79 @@ class WikiClient implements IWikiClient, IJsonSerializable {
     }
 
     return content;
+  }
+
+  async #getEditToken(): Promise<string> {
+    this.#logger.info('Getting edit token');
+
+    const urlSearchParams = new URLSearchParams({
+      action: 'query',
+      meta: 'tokens',
+      type: 'csrf',
+      formatversion: '2',
+      format: 'json',
+    });
+
+    const {
+      query: {
+        tokens: { csrftoken },
+      },
+    } = await this.#fetcher.get<IQueryMetaTokensApiResponse<'csrftoken'>>({
+      query: urlSearchParams,
+    });
+
+    return csrftoken;
+  }
+
+  @sleepAfter(500)
+  async editPage(pagename: string, newContent: string): Promise<void> {
+    this.#logger.info('Editing page', pagename);
+
+    this.#logger.debug('With new content', newContent);
+
+    const editToken = this.#editToken || (await this.#getEditToken());
+
+    const urlSearchParams = new URLSearchParams({
+      action: 'edit',
+      title: pagename,
+      text: newContent,
+      nocreate: 'true',
+      bot: 'true',
+      token: editToken,
+      assert: 'user',
+      formatversion: '2',
+      format: 'json',
+    });
+
+    const apiResult = await this.#fetcher.post<IEditApiResponse | IApiErrorResponse>({
+      body: urlSearchParams,
+    });
+
+    const isApiError = checkIsApiError(apiResult);
+
+    if (isApiError) {
+      throw new Error('Received an error from the API', {
+        cause: {
+          pagename,
+          apiResult,
+          urlSearchParams,
+          urlSearchParamsString: urlSearchParams.toString(),
+        },
+      });
+    }
+
+    if (apiResult.edit.result !== 'Success') {
+      throw new Error(`Could not edit page ${pagename}`, {
+        cause: {
+          pagename,
+          apiResult,
+          urlSearchParams,
+          urlSearchParamsString: urlSearchParams.toString(),
+        },
+      });
+    }
+
+    this.#logger.info('Edited page successfully. New revision ID is', apiResult.edit.newrevid);
   }
 
   toJSON(): unknown {
