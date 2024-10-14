@@ -6,6 +6,7 @@ import { type ILogger } from '@/logger';
 import {
   type IFetcher,
   type IFetcherOptions,
+  type IFetchOptions,
   type IGetRquestParameters,
   type IPostRquestParameters,
 } from './types';
@@ -47,10 +48,17 @@ class Fetcher implements IFetcher {
     };
   }
 
-  async #fetch<T>(url: URL, fetchOptions: RequestInit): Promise<T> {
-    // TODO: baseHeaders here
+  async #fetch<T>(url: URL, fetchOptions: IFetchOptions): Promise<T> {
+    const baseHeaders = await this.#prepareHeaders();
 
-    const response = await fetch(url, fetchOptions);
+    const response = await fetch(url, {
+      ...fetchOptions,
+      headers: {
+        ...this.#options.headers,
+        ...baseHeaders,
+        ...fetchOptions.headers,
+      },
+    });
 
     const cookies = response.headers.getSetCookie();
 
@@ -67,15 +75,9 @@ class Fetcher implements IFetcher {
 
     this.#logger.debug('GET', url.toString());
 
-    const baseHeaders = await this.#prepareHeaders();
-
     const jsonData = await this.#fetch<T>(url, {
       method: 'GET',
-      headers: {
-        ...this.#options.headers,
-        ...baseHeaders,
-        ...headers,
-      },
+      headers,
     });
 
     return jsonData;
@@ -86,15 +88,9 @@ class Fetcher implements IFetcher {
 
     this.#logger.debug('POST', url.toString());
 
-    const baseHeaders = await this.#prepareHeaders();
-
     const jsonData = await this.#fetch<T>(url, {
       method: 'POST',
-      headers: {
-        ...this.#options.headers,
-        ...baseHeaders,
-        ...headers,
-      },
+      headers,
       body,
     });
 

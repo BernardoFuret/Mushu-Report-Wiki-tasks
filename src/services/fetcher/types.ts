@@ -1,3 +1,7 @@
+interface IFetchOptions extends RequestInit {
+  headers?: Record<string, string>;
+}
+
 interface IGetRquestParameters {
   path?: string;
   query?: URLSearchParams;
@@ -20,4 +24,10 @@ interface IFetcher {
   post<T>(parameters: IPostRquestParameters): Promise<T>;
 }
 
-export type { IFetcher, IFetcherOptions, IGetRquestParameters, IPostRquestParameters };
+export type {
+  IFetcher,
+  IFetcherOptions,
+  IFetchOptions,
+  IGetRquestParameters,
+  IPostRquestParameters,
+};
