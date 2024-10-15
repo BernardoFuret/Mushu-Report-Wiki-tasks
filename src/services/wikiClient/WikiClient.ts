@@ -15,9 +15,6 @@ import {
   type IWikiClient,
 } from './types';
 
-// TODO: receive bot rednetials on instantiation and have a retry in case the login fails
-//  (decorator to assert if it's logged in and login if it isn't?)
-
 class WikiClient implements IWikiClient, IJsonSerializable {
   #logger: ILogger;
 
