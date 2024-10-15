@@ -1,4 +1,4 @@
-# Lorcana card updater
+# Mushu Report Wiki card template updater
 
 ## Usage
 
